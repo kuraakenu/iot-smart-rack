@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Rack Load Monitor</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+
+  <body class="bg-slate-100 min-h-screen p-6">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="text-3xl font-bold text-slate-800">Smart Rack Load Monitor</h1>
+      <p class="text-slate-500 mt-2">Monitoring beban rak secara real-time</p>
+
+      <!-- Sensor Monitoring -->
+      <div class="mt-6 grid md:grid-cols-2 gap-6">
+        <!-- Lantai 1 -->
+        <div class="bg-white rounded-xl shadow p-6">
+          <h2 class="text-xl font-bold">Lantai 1</h2>
+
+          <p id="weight1" class="text-4xl font-bold mt-4">0.00 kg</p>
+
+          <p class="text-sm text-slate-500">Kapasitas maksimal: 2 kg</p>
+
+          <span
+            id="status1"
+            class="inline-block mt-4 px-4 py-2 rounded-lg bg-green-100 text-green-700"
+          >
+            AMAN
+          </span>
+
+          <button
+            onclick="requestTare('lantai1')"
+            class="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
+          >
+            Tare Lantai 1
+          </button>
+        </div>
+
+        <!-- Lantai 2 -->
+        <div class="bg-white rounded-xl shadow p-6">
+          <h2 class="text-xl font-bold">Lantai 2</h2>
+
+          <p id="weight2" class="text-4xl font-bold mt-4">0.00 kg</p>
+
+          <p class="text-sm text-slate-500">Kapasitas maksimal: 1 kg</p>
+
+          <span
+            id="status2"
+            class="inline-block mt-4 px-4 py-2 rounded-lg bg-green-100 text-green-700"
+          >
+            AMAN
+          </span>
+
+          <button
+            onclick="requestTare('lantai2')"
+            class="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
+          >
+            Tare Lantai 2
+          </button>
+        </div>
+      </div>
+
+      <!-- Tare Semua -->
+      <div class="mt-6 bg-white rounded-xl shadow p-6">
+        <h2 class="text-lg font-bold text-slate-800">Kalibrasi Sensor</h2>
+
+        <p class="text-sm text-slate-500 mt-1">
+          Atur ulang titik nol sensor load cell.
+        </p>
+
+        <button
+          onclick="requestTare('semua')"
+          class="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg"
+        >
+          Tare Semua Sensor
+        </button>
+
+        <p id="tareMessage" class="mt-4 text-sm font-semibold text-slate-500">
+          Belum ada proses Tare.
+        </p>
+      </div>
+
+      <!-- Koneksi Dashboard -->
+      <div class="mt-6 bg-white rounded-xl shadow p-5">
+        <p class="text-sm text-slate-500">Koneksi Dashboard</p>
+
+        <p id="connection" class="font-semibold text-red-600">
+          Menghubungkan...
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const socket = io();
+
+      const tareButtons = document.querySelectorAll(
+        'button[onclick^="requestTare"]',
+      );
+
+      const tareMessage = document.getElementById("tareMessage");
+
+      // ================= CONNECTION =================
+
+      socket.on("connect", () => {
+        document.getElementById("connection").textContent = "Terhubung";
+
+        document.getElementById("connection").className =
+          "font-semibold text-green-600";
+      });
+
+      socket.on("disconnect", () => {
+        document.getElementById("connection").textContent = "Terputus";
+
+        document.getElementById("connection").className =
+          "font-semibold text-red-600";
+      });
+
+      // ================= SENSOR UPDATE =================
+
+      function updateFloor(id, item) {
+        document.getElementById(`weight${id}`).textContent =
+          Number(item.berat).toFixed(2) + " kg";
+
+        const status = document.getElementById(`status${id}`);
+
+        status.textContent = item.status;
+
+        const styles = {
+          AMAN: "bg-green-100 text-green-700",
+          PERINGATAN: "bg-yellow-100 text-yellow-700",
+          BAHAYA: "bg-red-100 text-red-700",
+        };
+
+        status.className =
+          "inline-block mt-4 px-4 py-2 rounded-lg " +
+          (styles[item.status] || "bg-slate-100 text-slate-700");
+      }
+
+      socket.on("sensor-update", (data) => {
+        data.forEach((item) => {
+          if (item.id_rak === 1) updateFloor(1, item);
+          if (item.id_rak === 2) updateFloor(2, item);
+        });
+      });
+
+      // ================= TARE FUNCTIONS =================
+
+      function setTareBusy(busy) {
+        tareButtons.forEach((button) => {
+          button.disabled = busy;
+
+          button.classList.toggle("opacity-50", busy);
+          button.classList.toggle("cursor-not-allowed", busy);
+        });
+      }
+
+      async function requestTare(target) {
+        try {
+          setTareBusy(true);
+
+          tareMessage.textContent = "Mengirim perintah Tare...";
+          tareMessage.className = "mt-4 text-sm font-semibold text-blue-600";
+
+          const response = await fetch("/api/tare", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ target }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.message);
+          }
+
+          tareMessage.textContent = `Perintah Tare ${target} berhasil dibuat. Menunggu ESP32...`;
+        } catch (error) {
+          tareMessage.textContent = "Gagal: " + error.message;
+
+          tareMessage.className = "mt-4 text-sm font-semibold text-red-600";
+
+          setTareBusy(false);
+        }
+      }
+
+      // ESP32 mengambil perintah
+      socket.on("tare-status", (data) => {
+        if (data.status === "pending") {
+          tareMessage.textContent = `Tare ${data.target} menunggu ESP32...`;
+        }
+
+        if (data.status === "processing") {
+          tareMessage.textContent = `Tare ${data.target} sedang diproses ESP32...`;
+        }
+
+        tareMessage.className = "mt-4 text-sm font-semibold text-blue-600";
+      });
+
+      // ESP32 mengirim hasil Tare
+      socket.on("tare-result", (data) => {
+        tareMessage.textContent = data.message;
+
+        if (data.status === "success") {
+          tareMessage.className = "mt-4 text-sm font-semibold text-green-600";
+        } else {
+          tareMessage.className = "mt-4 text-sm font-semibold text-red-600";
+        }
+
+        setTareBusy(false);
+      });
+    </script>
+  </body>
+</html>
