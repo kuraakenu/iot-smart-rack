@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `data_log` (
 -- Tabel: FLOOR_CONFIG  (tambahan baru)
 -- Menyimpan konfigurasi per lantai:
 --   cal_factor  : faktor konversi raw HX711 → kg
---   warning_kg  : batas bawah status PERINGATAN
+--   warning_kg  : batas bawah status WASPADA
 --   danger_kg   : batas bawah status BAHAYA
 --   max_kg      : kapasitas maksimal rak (batas fisik)
 -- ---------------------------------------------------------

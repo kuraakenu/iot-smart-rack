@@ -99,14 +99,27 @@
         <div class="bg-white rounded-xl shadow p-6">
           <h2 class="text-lg font-bold text-slate-700 mb-4">Data Historis</h2>
 
-          <!-- Filter -->
-          <div class="flex gap-2 mb-4">
-            <button onclick="filterTabel('semua')" id="filter-semua"
-              class="filter-btn px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Semua</button>
-            <button onclick="filterTabel('1')" id="filter-1"
-              class="filter-btn px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Lantai 1</button>
-            <button onclick="filterTabel('2')" id="filter-2"
-              class="filter-btn px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Lantai 2</button>
+          <!-- Filter Lantai -->
+          <div class="flex flex-wrap gap-2 mb-2">
+            <span class="text-xs text-slate-400 self-center font-semibold">Lantai:</span>
+            <button onclick="filterTabel('lantai','semua')" id="filter-lantai-semua"
+              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Semua</button>
+            <button onclick="filterTabel('lantai','1')" id="filter-lantai-1"
+              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Lantai 1</button>
+            <button onclick="filterTabel('lantai','2')" id="filter-lantai-2"
+              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Lantai 2</button>
+          </div>
+          <!-- Filter Status -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="text-xs text-slate-400 self-center font-semibold">Status:</span>
+            <button onclick="filterTabel('status','semua')" id="filter-status-semua"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Semua</button>
+            <button onclick="filterTabel('status','AMAN')" id="filter-status-AMAN"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Aman</button>
+            <button onclick="filterTabel('status','WASPADA')" id="filter-status-WASPADA"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Waspada</button>
+            <button onclick="filterTabel('status','BAHAYA')" id="filter-status-BAHAYA"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Bahaya</button>
           </div>
 
           <div class="overflow-x-auto">
@@ -403,7 +416,7 @@
 
       let lastDataTime = null;
       let lastUpdatedInterval = null;
-      let currentFilter = 'semua';
+      let currentFilter = { lantai: 'semua', status: 'semua' };
 
       // Simpan data historis untuk filter tabel
       let historisList = [];
@@ -501,7 +514,7 @@
 
       const gaugeColors = {
         AMAN: '#22c55e',
-        PERINGATAN: '#eab308',
+        WASPADA: '#eab308',
         BAHAYA: '#ef4444'
       };
 
@@ -522,7 +535,7 @@
         statusEl.textContent = item.status;
         const styles = {
           AMAN: 'bg-green-100 text-green-700',
-          PERINGATAN: 'bg-yellow-100 text-yellow-700',
+          WASPADA: 'bg-yellow-100 text-yellow-700',
           BAHAYA: 'bg-red-100 text-red-700'
         };
         statusEl.className = 'inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold ' +
@@ -594,7 +607,7 @@
 
       const statusRowClass = {
         AMAN: 'bg-green-50',
-        PERINGATAN: 'bg-yellow-50',
+        WASPADA: 'bg-yellow-50',
         BAHAYA: 'bg-red-50'
       };
 
@@ -605,9 +618,11 @@
 
       function renderTabel() {
         const tbody = document.getElementById('tabel-historis');
-        const filtered = currentFilter === 'semua'
-          ? historisList
-          : historisList.filter(r => String(r.id_rak) === currentFilter);
+        const filtered = historisList.filter(r => {
+          const lantaiOk = currentFilter.lantai === 'semua' || String(r.id_rak) === currentFilter.lantai;
+          const statusOk = currentFilter.status === 'semua' || r.status_beban === currentFilter.status;
+          return lantaiOk && statusOk;
+        });
 
         tbody.innerHTML = '';
         if (filtered.length === 0) {
@@ -630,16 +645,17 @@
 
       function statusBadgeClass(s) {
         return s === 'AMAN' ? 'bg-green-100 text-green-700'
-          : s === 'PERINGATAN' ? 'bg-yellow-100 text-yellow-700'
+          : s === 'WASPADA' ? 'bg-yellow-100 text-yellow-700'
           : s === 'BAHAYA' ? 'bg-red-100 text-red-700'
           : 'bg-slate-100 text-slate-600';
       }
 
-      function filterTabel(val) {
-        currentFilter = val;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-          const isActive = btn.id === 'filter-' + val;
-          btn.className = 'filter-btn px-3 py-1 text-xs font-semibold rounded-full ' +
+      function filterTabel(type, val) {
+        currentFilter[type] = val;
+        const cls = 'filter-btn-' + type;
+        document.querySelectorAll('.' + cls).forEach(btn => {
+          const isActive = btn.id === 'filter-' + type + '-' + val;
+          btn.className = cls + ' px-3 py-1 text-xs font-semibold rounded-full ' +
             (isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200');
         });
         renderTabel();
