@@ -1,4 +1,4 @@
 node_modules/
 .env
-*.md
+*-plan.md
 smart_load_safety.ino
