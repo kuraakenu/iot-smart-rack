@@ -99,8 +99,6 @@ MQTT_HOST=your.emqx.host
 MQTT_PORT=8883
 MQTT_USERNAME=your_mqtt_user
 MQTT_PASSWORD=your_mqtt_password
-
-SESSION_SECRET=ganti_dengan_string_acak_panjang
 ```
 
 ---
@@ -216,9 +214,9 @@ kal2   — Kalibrasi Lantai 2 dengan beban 200 g
 | `POST` | `/api/logout` | — | Logout |
 | `GET` | `/api/me` | — | Cek sesi aktif |
 | `GET` | `/api/config` | — | Ambil konfigurasi semua lantai |
-| `PUT` | `/api/config/:idRak` | ✅ | Update konfigurasi lantai |
-| `POST` | `/api/calibrate/:idRak` | ✅ | Kirim perintah kalibrasi ke ESP32 |
-| `POST` | `/api/tare` | ✅ | Kirim perintah tare ke ESP32 |
+| `PUT` | `/api/config/:idRak` | Ya | Update konfigurasi lantai |
+| `POST` | `/api/calibrate/:idRak` | Ya | Kirim perintah kalibrasi ke ESP32 |
+| `POST` | `/api/tare` | Ya | Kirim perintah tare ke ESP32 |
 | `GET` | `/api/tare/history` | — | Ambil 50 riwayat tare terbaru |
 | `GET` | `/api/history` | — | Ambil 50 data log sensor terbaru |
 | `GET` | `/api/test` | — | Cek koneksi database |
