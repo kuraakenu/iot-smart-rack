@@ -14,22 +14,25 @@ Setiap lantai memiliki tiga level status:
 ## Teknologi
 
 ### Backend
-| Paket | Fungsi |
-|-------|--------|
-| Node.js + Express 5 | HTTP server & REST API |
-| Socket.IO 4 | Push data real-time ke browser |
-| mqtt 5 | Komunikasi dengan ESP32 via EMQX Cloud TLS |
-| mysql2 | Penyimpanan konfigurasi & log data |
-| express-session | Autentikasi operator |
-| bcryptjs | Hashing password |
-| dotenv | Konfigurasi environment |
+
+| Paket               | Fungsi                                     |
+| ------------------- | ------------------------------------------ |
+| Node.js + Express 5 | HTTP server & REST API                     |
+| Socket.IO 4         | Push data real-time ke browser             |
+| mqtt 5              | Komunikasi dengan ESP32 via EMQX Cloud TLS |
+| mysql2              | Penyimpanan konfigurasi & log data         |
+| express-session     | Autentikasi operator                       |
+| bcryptjs            | Hashing password                           |
+| dotenv              | Konfigurasi environment                    |
 
 ### Frontend
+
 - HTML + Tailwind CSS (CDN)
 - ApexCharts (gauge radial & line chart real-time)
 - Socket.IO client
 
 ### Firmware (ESP32)
+
 - Arduino framework
 - HX711 — baca load cell
 - PubSubClient — MQTT
@@ -59,6 +62,7 @@ smart-load-safety/
 ## Cara Menjalankan dari Awal
 
 ### Prasyarat
+
 - **Node.js** v18+ — https://nodejs.org
 - **MySQL** 8.0+ (atau MariaDB 10.6+)
 - **Arduino IDE** 2.x (untuk flash ESP32)
@@ -128,9 +132,11 @@ Schema akan membuat 5 tabel sekaligus:
 
 > **User admin bawaan:** username `admin`, password `admin123`
 > Ganti password setelah pertama login lewat query:
+>
 > ```sql
 > UPDATE operator SET password = '$2b$10$...' WHERE username = 'admin';
 > ```
+>
 > Hash bisa dibuat dengan: `node -e "const b=require('bcryptjs'); b.hash('password_baru',10).then(console.log)"`
 
 ---
@@ -153,7 +159,7 @@ Server berjalan di: **http://localhost:3000**
 
 ### 5. Flash Firmware ESP32
 
-1. Buka `smart_load_safety.ino` di Arduino IDE
+1. Buka `smartloadsafety.ino` di Arduino IDE
 2. Install library yang dibutuhkan via Library Manager:
    - `HX711` by bogde
    - `PubSubClient` by Nick O'Leary
@@ -176,6 +182,7 @@ Server berjalan di: **http://localhost:3000**
 Kalibrasi bisa dilakukan dua cara:
 
 **A. Lewat Dashboard Web** (direkomendasikan)
+
 1. Buka tab **Konfigurasi**
 2. Login sebagai operator
 3. Letakkan beban **200 gram** di atas sensor yang akan dikalibrasi
@@ -184,6 +191,7 @@ Kalibrasi bisa dilakukan dua cara:
 6. Cal Factor baru otomatis tersimpan ke database
 
 **B. Lewat Serial Monitor Arduino IDE** (115200 baud)
+
 ```
 tare   — Nol-kan semua sensor
 kal1   — Kalibrasi Lantai 1 dengan beban 200 g
@@ -194,61 +202,61 @@ kal2   — Kalibrasi Lantai 2 dengan beban 200 g
 
 ## MQTT Topics
 
-| Topic | Arah | Payload |
-|-------|------|---------|
-| `sensor/raw` | ESP32 → Server | `{ "raw1": int, "raw2": int }` |
-| `sensor/status` | Server → ESP32 | `[{ id_rak, berat_kg, status }, ...]` |
-| `command/tare` | Server → ESP32 | `{ id, target, createdAt }` |
-| `tare/result` | ESP32 → Server | `{ id, target, success, message }` |
-| `command/calibrate` | Server → ESP32 | `{ id, id_rak, ref_kg, createdAt }` |
-| `calibrate/result` | ESP32 → Server | `{ id_rak, success, cal_factor, message }` |
-| `config/update` | Server → ESP32 | `{ id_rak, cal_factor, warning_kg, danger_kg, max_kg }` |
+| Topic               | Arah           | Payload                                                 |
+| ------------------- | -------------- | ------------------------------------------------------- |
+| `sensor/raw`        | ESP32 → Server | `{ "raw1": int, "raw2": int }`                          |
+| `sensor/status`     | Server → ESP32 | `[{ id_rak, berat_kg, status }, ...]`                   |
+| `command/tare`      | Server → ESP32 | `{ id, target, createdAt }`                             |
+| `tare/result`       | ESP32 → Server | `{ id, target, success, message }`                      |
+| `command/calibrate` | Server → ESP32 | `{ id, id_rak, ref_kg, createdAt }`                     |
+| `calibrate/result`  | ESP32 → Server | `{ id_rak, success, cal_factor, message }`              |
+| `config/update`     | Server → ESP32 | `{ id_rak, cal_factor, warning_kg, danger_kg, max_kg }` |
 
 ---
 
 ## REST API
 
-| Method | Endpoint | Auth | Keterangan |
-|--------|----------|------|------------|
-| `POST` | `/api/login` | — | Login operator |
-| `POST` | `/api/logout` | — | Logout |
-| `GET` | `/api/me` | — | Cek sesi aktif |
-| `GET` | `/api/config` | — | Ambil konfigurasi semua lantai |
-| `PUT` | `/api/config/:idRak` | Ya | Update konfigurasi lantai |
-| `POST` | `/api/calibrate/:idRak` | Ya | Kirim perintah kalibrasi ke ESP32 |
-| `POST` | `/api/tare` | Ya | Kirim perintah tare ke ESP32 |
-| `GET` | `/api/tare/history` | — | Ambil 50 riwayat tare terbaru |
-| `GET` | `/api/history` | — | Ambil 50 data log sensor terbaru |
-| `GET` | `/api/test` | — | Cek koneksi database |
+| Method | Endpoint                | Auth | Keterangan                        |
+| ------ | ----------------------- | ---- | --------------------------------- |
+| `POST` | `/api/login`            | —    | Login operator                    |
+| `POST` | `/api/logout`           | —    | Logout                            |
+| `GET`  | `/api/me`               | —    | Cek sesi aktif                    |
+| `GET`  | `/api/config`           | —    | Ambil konfigurasi semua lantai    |
+| `PUT`  | `/api/config/:idRak`    | Ya   | Update konfigurasi lantai         |
+| `POST` | `/api/calibrate/:idRak` | Ya   | Kirim perintah kalibrasi ke ESP32 |
+| `POST` | `/api/tare`             | Ya   | Kirim perintah tare ke ESP32      |
+| `GET`  | `/api/tare/history`     | —    | Ambil 50 riwayat tare terbaru     |
+| `GET`  | `/api/history`          | —    | Ambil 50 data log sensor terbaru  |
+| `GET`  | `/api/test`             | —    | Cek koneksi database              |
 
 ---
 
 ## Fitur Dashboard
 
-| Tab | Fitur |
-|-----|-------|
-| **Monitor** | Gauge radial real-time beban + status per lantai. Label kapasitas mengikuti nilai `max_kg` di database |
-| **Historis** | Line chart tren berat + tabel log dengan filter per lantai & status |
-| **Tare** | Kirim perintah zero/tare (Lantai 1 / Lantai 2 / Semua). Riwayat tare tersimpan di database dengan info siapa yang mengeksekusi |
-| **Konfigurasi** | Atur Cal Factor (+ tombol kalibrasi 200 g), threshold Warning/Danger/Max per lantai. Membutuhkan login |
+| Tab             | Fitur                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Monitor**     | Gauge radial real-time beban + status per lantai. Label kapasitas mengikuti nilai `max_kg` di database                         |
+| **Historis**    | Line chart tren berat + tabel log dengan filter per lantai & status                                                            |
+| **Tare**        | Kirim perintah zero/tare (Lantai 1 / Lantai 2 / Semua). Riwayat tare tersimpan di database dengan info siapa yang mengeksekusi |
+| **Konfigurasi** | Atur Cal Factor (+ tombol kalibrasi 200 g), threshold Warning/Danger/Max per lantai. Membutuhkan login                         |
 
 ---
 
 ## Pinout ESP32
 
-| Pin | Fungsi |
-|-----|--------|
-| 4 | LED Merah Lantai 1 |
-| 16 | LED Kuning Lantai 1 |
-| 17 | LED Hijau Lantai 1 |
-| 5 | LED Merah Lantai 2 |
-| 18 | LED Kuning Lantai 2 |
-| 19 | LED Hijau Lantai 2 |
-| 12 | HX711 DT Lantai 1 |
-| 13 | HX711 SCK Lantai 1 |
-| 14 | HX711 DT Lantai 2 |
-| 27 | HX711 SCK Lantai 2 |
-| 23 | Buzzer |
-| 21 | Tombol (ganti halaman LCD) |
-| 25 | LCD SCL (I2C) |
-| 26 | LCD SDA (I2C) |
+| Pin | Fungsi                     |
+| --- | -------------------------- |
+| 4   | LED Merah Lantai 1         |
+| 16  | LED Kuning Lantai 1        |
+| 17  | LED Hijau Lantai 1         |
+| 5   | LED Merah Lantai 2         |
+| 18  | LED Kuning Lantai 2        |
+| 19  | LED Hijau Lantai 2         |
+| 12  | HX711 DT Lantai 1          |
+| 13  | HX711 SCK Lantai 1         |
+| 14  | HX711 DT Lantai 2          |
+| 27  | HX711 SCK Lantai 2         |
+| 23  | Buzzer                     |
+| 21  | Tombol (ganti halaman LCD) |
+| 25  | LCD SCL (I2C)              |
+| 26  | LCD SDA (I2C)              |
