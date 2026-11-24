@@ -86,4 +86,20 @@ ON DUPLICATE KEY UPDATE
   `danger_kg`  = VALUES(`danger_kg`),
   `max_kg`     = VALUES(`max_kg`);
 
+-- ---------------------------------------------------------
+-- Tabel: tare_log
+-- Menyimpan riwayat setiap eksekusi tare (perintah + hasil).
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tare_log` (
+  `id_tare`    int(11)      NOT NULL AUTO_INCREMENT,
+  `id_user`    int(11)      DEFAULT NULL,
+  `target`     varchar(20)  NOT NULL,
+  `status`     varchar(10)  NOT NULL,
+  `message`    varchar(255) DEFAULT NULL,
+  `created_at` datetime     NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_tare`),
+  KEY `id_user` (`id_user`),
+  CONSTRAINT `tare_log_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `operator` (`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;

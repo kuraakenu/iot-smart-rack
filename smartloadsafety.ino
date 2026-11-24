@@ -12,15 +12,15 @@
 #include <math.h>
 
 // ===================== KONFIGURASI JARINGAN =====================
-const char* WIFI_SSID  = "Wokwi-GUEST";
+const char* WIFI_SSID  = "";
 const char* WIFI_PASS  = "";
 
 // ===================== KONFIGURASI MQTT (EMQX Cloud) =====================
-const char* MQTT_HOST  = "md032d82.ala.asia-southeast1.emqxsl.com";
-const int   MQTT_PORT  = 8883;
-const char* MQTT_USER  = "smartrack";
-const char* MQTT_PASS  = "1234";
-const char* CLIENT_ID  = "esp32-smartrack";
+const char* MQTT_HOST  = "";
+const int   MQTT_PORT  = ;
+const char* MQTT_USER  = "";
+const char* MQTT_PASS  = "";
+const char* CLIENT_ID  = "";
 
 // ===================== PIN HARDWARE =====================
 #define PIN_BUZZER   23
@@ -33,9 +33,10 @@ const char* CLIENT_ID  = "esp32-smartrack";
 const float LT1_KUNING = 1.2, LT1_MERAH = 1.6, LT1_MAX = 2.0;
 const float LT2_KUNING = 0.6, LT2_MERAH = 0.8, LT2_MAX = 1.0;
 
-// ===================== KALIBRASI LOAD CELL (fallback lokal) =====================
-float CAL_KANAN = 52500.0;
-float CAL_KIRI  = 52500.0;
+// ===================== KALIBRASI LOAD CELL =====================
+float CAL_KANAN = 406575.0f;   // Lantai 1
+float CAL_KIRI  = 422386.25f;  // Lantai 2
+const float NOISE_DEADBAND_KG = 0.02;
 const float NOISE_DEADBAND_KG = 0.02;
 
 // ===================== FILTER =====================
@@ -230,6 +231,51 @@ void cekKalibrasiSerial() {
   }
 }
 
+// ===================== MQTT: EKSEKUSI KALIBRASI =====================
+void executeCalibrate(int idRak, float refKg) {
+  int idx = idRak - 1;
+  if (idx < 0 || idx > 1) return;
+
+  Serial.printf("[CALIBRATE] Eksekusi kalibrasi lantai %d, ref=%.3f kg\n", idRak, refKg);
+
+  lcd.setCursor(0, 1);
+  char buf[21];
+  snprintf(buf, sizeof(buf), "  Kalibrasi L%d...   ", idRak);
+  lcd.print(buf);
+
+  long raw = labs(lt[idx].scale.get_value(10));
+
+  StaticJsonDocument<128> result;
+  result["id_rak"] = idRak;
+
+  if (raw > 100) {
+    float newCal = (float)raw / refKg;
+    lt[idx].calFactor = newCal;
+    lt[idx].scale.set_scale(newCal);
+    lt[idx].beratFiltered = refKg;
+
+    if (idRak == 1) CAL_KANAN = newCal;
+    else            CAL_KIRI  = newCal;
+
+    Serial.printf("[CALIBRATE] Lantai %d berhasil! cal_factor = %.1f\n", idRak, newCal);
+
+    result["success"]    = true;
+    result["cal_factor"] = newCal;
+    result["message"]    = "Kalibrasi berhasil";
+  } else {
+    Serial.printf("[CALIBRATE] Lantai %d GAGAL — tidak ada beban terdeteksi\n", idRak);
+    result["success"] = false;
+    result["message"] = "Tidak ada beban terdeteksi";
+  }
+
+  String resultStr;
+  serializeJson(result, resultStr);
+  mqttClient.publish("calibrate/result", resultStr.c_str());
+
+  delay(500);
+  tampilLCD();
+}
+
 // ===================== MQTT: EKSEKUSI TARE =====================
 void executeTare(const char* target) {
   Serial.printf("[TARE] Eksekusi: %s\n", target);
@@ -293,7 +339,7 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
     StaticJsonDocument<128> doc;
     if (deserializeJson(doc, msg)) return;
 
-    long        id     = doc["id"].as<long>();
+    uint32_t    id     = doc["id"].as<unsigned long>();
     const char* target = doc["target"];
 
     Serial.printf("[MQTT] Perintah tare: id=%ld, target=%s\n", id, target);
@@ -302,13 +348,26 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
 
     // Kirim hasil tare kembali ke server
     StaticJsonDocument<128> result;
-    result["id"]      = id;
+    result["id"]      = (unsigned long)id;
     result["target"]  = target;
     result["success"] = true;
     result["message"] = "Tare berhasil";
     String resultStr;
     serializeJson(result, resultStr);
     mqttClient.publish("tare/result", resultStr.c_str());
+  }
+
+  // ---- command/calibrate → eksekusi kalibrasi lalu kirim hasil ----
+  if (strcmp(topic, "command/calibrate") == 0) {
+    StaticJsonDocument<128> doc;
+    if (deserializeJson(doc, msg)) return;
+
+    int   idRak  = doc["id_rak"].as<int>();
+    float refKg  = doc["ref_kg"].as<float>();
+    if (refKg <= 0.0f) refKg = 0.200f;   // fallback 200 gram
+
+    Serial.printf("[MQTT] Perintah kalibrasi: id_rak=%d, ref_kg=%.3f\n", idRak, refKg);
+    executeCalibrate(idRak, refKg);
   }
 
   // ---- config/update → update threshold lokal ----
@@ -344,6 +403,7 @@ void mqttReconnect() {
     Serial.println(" OK");
     mqttClient.subscribe("sensor/status");
     mqttClient.subscribe("command/tare");
+    mqttClient.subscribe("command/calibrate");
     mqttClient.subscribe("config/update");
   } else {
     Serial.printf(" Gagal, rc=%d\n", mqttClient.state());
@@ -382,8 +442,8 @@ void setup() {
   pinMode(PIN_BUTTON, INPUT_PULLUP);
 
   //                   DT   SCK  G   Y   R
-  setupLantai(lt[0],   14,  27, 19, 18,  5, LT1_KUNING, LT1_MERAH, LT1_MAX, CAL_KANAN);
-  setupLantai(lt[1],   12,  13, 17, 16,  4, LT2_KUNING, LT2_MERAH, LT2_MAX, CAL_KIRI);
+  setupLantai(lt[0],   12,  13, 17, 16,  4, LT1_KUNING, LT1_MERAH, LT1_MAX, CAL_KANAN);
+  setupLantai(lt[1],   14,  27, 19, 18,  5, LT2_KUNING, LT2_MERAH, LT2_MAX, CAL_KIRI);
 
   lcd.setCursor(0, 2); lcd.print(F("  Konek ke WiFi...  "));
   WiFi.begin(WIFI_SSID, WIFI_PASS);

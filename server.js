@@ -44,9 +44,9 @@ const mqttClient = mqtt.connect(`mqtts://${MQTT_HOST}:${MQTT_PORT}`, {
 
 mqttClient.on("connect", () => {
   console.log("[MQTT] Connected to broker");
-  mqttClient.subscribe(["sensor/raw", "tare/result"], (err) => {
+  mqttClient.subscribe(["sensor/raw", "tare/result", "calibrate/result"], (err) => {
     if (err) console.error("[MQTT] Subscribe error:", err.message);
-    else console.log("[MQTT] Subscribed to sensor/raw, tare/result");
+    else console.log("[MQTT] Subscribed to sensor/raw, tare/result, calibrate/result");
   });
 
   // Kirim config dari database ke ESP32 supaya calFactor lokal sinkron
@@ -72,6 +72,9 @@ mqttClient.on("reconnect", () => {
 });
 
 const NOISE_DEADBAND_KG = 0.005;
+
+// Map untuk track id_user per command id tare yang sedang pending
+const tarePendingUser = new Map();
 
 mqttClient.on("message", (topic, message) => {
   const payload = message.toString();
@@ -132,7 +135,36 @@ mqttClient.on("message", (topic, message) => {
     })();
   }
 
-  // ---- tare/result → emit ke dashboard ----
+  // ---- calibrate/result → update cal_factor di DB + emit ke dashboard ----
+  if (topic === "calibrate/result") {
+    let parsed;
+    try { parsed = JSON.parse(payload); } catch { return; }
+
+    const idRak     = parsed.id_rak;
+    const success   = parsed.success === true;
+    const calFactor = parsed.cal_factor;
+
+    if (success && idRak && calFactor && floorConfig[idRak]) {
+      // Update cache
+      floorConfig[idRak].cal_factor = calFactor;
+      // Persist ke DB
+      db.query(
+        `UPDATE FLOOR_CONFIG SET cal_factor=? WHERE id_rak=?`,
+        [calFactor, idRak]
+      ).catch(err => console.error("[DB] Gagal update cal_factor:", err.message));
+
+      console.log(`[CALIBRATE] Lantai ${idRak} cal_factor diperbarui ke ${calFactor}`);
+    }
+
+    io.emit("calibrate-result", {
+      id_rak:     idRak,
+      success,
+      cal_factor: calFactor || null,
+      message:    parsed.message || (success ? "Kalibrasi berhasil" : "Kalibrasi gagal"),
+    });
+  }
+
+ // ---- tare/result → simpan ke DB + emit ke dashboard ----
   if (topic === "tare/result") {
     let parsed;
     try { parsed = JSON.parse(payload); } catch { return; }
@@ -144,6 +176,17 @@ mqttClient.on("message", (topic, message) => {
       message:     parsed.message || (parsed.success ? "Tare berhasil" : "Tare gagal"),
       completedAt: new Date().toISOString(),
     };
+
+    // Ambil id_user dari map — coerce ke number agar cocok dengan key yang diset
+    const cmdId  = Number(parsed.id);
+    const idUser = tarePendingUser.get(cmdId) || null;
+    tarePendingUser.delete(cmdId);
+
+    // Simpan ke tare_log
+    db.query(
+      `INSERT INTO tare_log (id_user, target, status, message) VALUES (?, ?, ?, ?)`,
+      [idUser, result.target, result.status, result.message]
+    ).catch(err => console.error("[DB] Gagal simpan tare_log:", err.message));
 
     io.emit("tare-result", result);
     console.log("[MQTT] Tare result:", result);
@@ -221,7 +264,7 @@ app.get("/api/config", (req, res) => {
 
 app.put("/api/config/:idRak", requireAuth, async (req, res) => {
   const idRak = parseInt(req.params.idRak, 10);
-
+ 
   if (!floorConfig[idRak]) {
     return res.status(404).json({ success: false, message: "Lantai tidak ditemukan" });
   }
@@ -263,9 +306,34 @@ app.put("/api/config/:idRak", requireAuth, async (req, res) => {
   }
 });
 
+// ===================== CALIBRATE API =====================
+app.post("/api/calibrate/:idRak", requireAuth, (req, res) => {
+  const idRak = parseInt(req.params.idRak, 10);
+
+  if (!floorConfig[idRak]) {
+    return res.status(404).json({ success: false, message: "Lantai tidak ditemukan" });
+  }
+
+  const command = {
+    id:        Date.now(),
+    id_rak:    idRak,
+    ref_kg:    0.200,          // beban referensi 200 gram
+    createdAt: new Date().toISOString(),
+  };
+
+  mqttClient.publish("command/calibrate", JSON.stringify(command));
+  console.log(`[CALIBRATE] Perintah kalibrasi lantai ${idRak} dikirim:`, command);
+
+  res.status(201).json({
+    success: true,
+    message: "Perintah kalibrasi berhasil dikirim",
+    command,
+  });
+});
+
 // ===================== TARE API =====================
 // Dashboard POST ke sini → server publish ke MQTT → ESP32 eksekusi
-app.post("/api/tare", (req, res) => {
+app.post("/api/tare", requireAuth, (req, res) => {
   const { target } = req.body;
 
   if (!["lantai1", "lantai2", "semua"].includes(target)) {
@@ -273,10 +341,15 @@ app.post("/api/tare", (req, res) => {
   }
 
   const command = {
-    id:        Date.now(),
+    id:        Date.now() >>> 0,   // truncate ke uint32 agar tidak overflow long di ESP32
     target,
     createdAt: new Date().toISOString(),
   };
+
+  // Simpan siapa yang mengirim perintah ini
+  if (req.session && req.session.user) {
+    tarePendingUser.set(command.id, req.session.user.id);
+  }
 
   // Publish perintah ke ESP32 via MQTT
   mqttClient.publish("command/tare", JSON.stringify(command));
@@ -288,6 +361,21 @@ app.post("/api/tare", (req, res) => {
     message: "Perintah tare berhasil dikirim",
     command,
   });
+});
+
+// ===================== TARE HISTORY API =====================
+app.get("/api/tare/history", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT id_tare, target, status, message, created_at
+       FROM tare_log
+       ORDER BY created_at DESC
+       LIMIT 50`
+    );
+    res.json({ success: true, data: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 // ===================== HISTORY API =====================

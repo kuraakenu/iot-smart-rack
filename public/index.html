@@ -12,85 +12,137 @@
 
   <body class="bg-slate-100 min-h-screen">
     <div class="max-w-5xl mx-auto px-4 py-6">
-
       <!-- Header -->
       <div class="mb-2">
-        <h1 class="text-3xl font-bold text-slate-800">Smart Load Safety Monitor</h1>
+        <h1 class="text-3xl font-bold text-slate-800">
+          Smart Load Safety Monitor
+        </h1>
         <p class="text-slate-500 mt-1">Monitoring beban rak secara real-time</p>
       </div>
 
       <!-- Connection Bar -->
-      <div class="flex items-center gap-2 bg-white rounded-lg shadow px-4 py-2 mb-5">
+      <div
+        class="flex items-center gap-2 bg-white rounded-lg shadow px-4 py-2 mb-5"
+      >
         <span class="text-sm text-slate-500">Dashboard:</span>
-        <span id="connection" class="text-sm font-semibold text-red-600">Menghubungkan...</span>
+        <span id="connection" class="text-sm font-semibold text-red-600"
+          >Menghubungkan...</span
+        >
         <span class="mx-2 text-slate-300">|</span>
         <span class="text-sm text-slate-500">Sensor:</span>
         <span id="lastUpdated" class="text-sm text-slate-500">–</span>
         <span class="flex-1"></span>
         <span id="login-info" class="text-xs text-slate-400 hidden"></span>
-        <button id="btn-logout" onclick="doLogout()" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-3 py-1 rounded-lg transition-colors">Logout</button>
-        <button id="btn-login-show" onclick="tampilkanLogin()" class="hidden text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1 rounded-lg transition-colors">Login</button>
+        <button
+          id="btn-logout"
+          onclick="doLogout()"
+          class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-3 py-1 rounded-lg transition-colors"
+        >
+          Logout
+        </button>
+        <button
+          id="btn-login-show"
+          onclick="tampilkanLogin()"
+          class="hidden text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1 rounded-lg transition-colors"
+        >
+          Login
+        </button>
       </div>
 
       <!-- Sensor Warning Banner -->
-      <div id="sensorWarning" class="hidden mb-4 flex items-center gap-2 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg px-4 py-3 text-sm font-semibold">
+      <div
+        id="sensorWarning"
+        class="hidden mb-4 flex items-center gap-2 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg px-4 py-3 text-sm font-semibold"
+      >
         Sensor tidak merespons lebih dari 30 detik
       </div>
 
       <!-- Tab Navigation -->
-      <div class="flex border-b border-slate-200 mb-5 bg-white rounded-t-xl shadow-sm overflow-hidden">
-        <button onclick="switchTab('monitor')" id="tab-btn-monitor"
-          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-blue-600 text-blue-600 transition-colors">
+      <div
+        class="flex border-b border-slate-200 mb-5 bg-white rounded-t-xl shadow-sm overflow-hidden"
+      >
+        <button
+          onclick="switchTab('monitor')"
+          id="tab-btn-monitor"
+          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-blue-600 text-blue-600 transition-colors"
+        >
           Monitor
         </button>
-        <button onclick="switchTab('historis')" id="tab-btn-historis"
-          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent transition-colors">
+        <button
+          onclick="switchTab('historis')"
+          id="tab-btn-historis"
+          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent transition-colors"
+        >
           Historis
         </button>
-        <button onclick="switchTab('tare')" id="tab-btn-tare"
-          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent transition-colors">
+        <button
+          onclick="switchTab('tare')"
+          id="tab-btn-tare"
+          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent transition-colors"
+        >
           Tare
         </button>
-        <button onclick="switchTab('konfigurasi')" id="tab-btn-konfigurasi"
-          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent transition-colors">
+        <button
+          onclick="switchTab('konfigurasi')"
+          id="tab-btn-konfigurasi"
+          class="tab-btn flex-1 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent transition-colors"
+        >
           Konfigurasi
         </button>
       </div>
 
       <!-- ==================== TAB 1: MONITOR ==================== -->
       <div id="tab-monitor">
-
         <!-- Gauge Grid -->
         <div class="grid md:grid-cols-2 gap-6">
-
           <!-- Lantai 1 -->
-          <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
-            <h2 class="text-lg font-bold text-slate-700 self-start">Lantai 1</h2>
-            <p class="text-xs text-slate-400 self-start mb-2">Kapasitas: 2 kg</p>
+          <div
+            class="bg-white rounded-xl shadow p-6 flex flex-col items-center"
+          >
+            <h2 class="text-lg font-bold text-slate-700 self-start">
+              Lantai 1
+            </h2>
+            <p id="kapasitas-label-1" class="text-xs text-slate-400 self-start mb-2">
+              Kapasitas: 2 kg
+            </p>
             <div id="gauge-lantai1" class="w-full"></div>
-            <p id="weight1" class="text-4xl font-bold text-slate-800 mt-1">0.00 kg</p>
-            <span id="status1" class="inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-700">
+            <p id="weight1" class="text-4xl font-bold text-slate-800 mt-1">
+              0.00 kg
+            </p>
+            <span
+              id="status1"
+              class="inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-700"
+            >
               AMAN
             </span>
           </div>
 
           <!-- Lantai 2 -->
-          <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
-            <h2 class="text-lg font-bold text-slate-700 self-start">Lantai 2</h2>
-            <p class="text-xs text-slate-400 self-start mb-2">Kapasitas: 1 kg</p>
+          <div
+            class="bg-white rounded-xl shadow p-6 flex flex-col items-center"
+          >
+            <h2 class="text-lg font-bold text-slate-700 self-start">
+              Lantai 2
+            </h2>
+            <p id="kapasitas-label-2" class="text-xs text-slate-400 self-start mb-2">
+              Kapasitas: 1 kg
+            </p>
             <div id="gauge-lantai2" class="w-full"></div>
-            <p id="weight2" class="text-4xl font-bold text-slate-800 mt-1">0.00 kg</p>
-            <span id="status2" class="inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-700">
+            <p id="weight2" class="text-4xl font-bold text-slate-800 mt-1">
+              0.00 kg
+            </p>
+            <span
+              id="status2"
+              class="inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-700"
+            >
               AMAN
             </span>
           </div>
-
         </div>
       </div>
 
       <!-- ==================== TAB 2: HISTORIS ==================== -->
       <div id="tab-historis" class="hidden">
-
         <div class="bg-white rounded-xl shadow p-6 mb-6">
           <h2 class="text-lg font-bold text-slate-700 mb-4">Tren Berat (kg)</h2>
           <div id="chart-historis"></div>
@@ -101,25 +153,64 @@
 
           <!-- Filter Lantai -->
           <div class="flex flex-wrap gap-2 mb-2">
-            <span class="text-xs text-slate-400 self-center font-semibold">Lantai:</span>
-            <button onclick="filterTabel('lantai','semua')" id="filter-lantai-semua"
-              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Semua</button>
-            <button onclick="filterTabel('lantai','1')" id="filter-lantai-1"
-              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Lantai 1</button>
-            <button onclick="filterTabel('lantai','2')" id="filter-lantai-2"
-              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Lantai 2</button>
+            <span class="text-xs text-slate-400 self-center font-semibold"
+              >Lantai:</span
+            >
+            <button
+              onclick="filterTabel('lantai', 'semua')"
+              id="filter-lantai-semua"
+              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white"
+            >
+              Semua
+            </button>
+            <button
+              onclick="filterTabel('lantai', '1')"
+              id="filter-lantai-1"
+              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
+            >
+              Lantai 1
+            </button>
+            <button
+              onclick="filterTabel('lantai', '2')"
+              id="filter-lantai-2"
+              class="filter-btn-lantai px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
+            >
+              Lantai 2
+            </button>
           </div>
           <!-- Filter Status -->
           <div class="flex flex-wrap gap-2 mb-4">
-            <span class="text-xs text-slate-400 self-center font-semibold">Status:</span>
-            <button onclick="filterTabel('status','semua')" id="filter-status-semua"
-              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white">Semua</button>
-            <button onclick="filterTabel('status','AMAN')" id="filter-status-AMAN"
-              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Aman</button>
-            <button onclick="filterTabel('status','WASPADA')" id="filter-status-WASPADA"
-              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Waspada</button>
-            <button onclick="filterTabel('status','BAHAYA')" id="filter-status-BAHAYA"
-              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200">Bahaya</button>
+            <span class="text-xs text-slate-400 self-center font-semibold"
+              >Status:</span
+            >
+            <button
+              onclick="filterTabel('status', 'semua')"
+              id="filter-status-semua"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-blue-600 text-white"
+            >
+              Semua
+            </button>
+            <button
+              onclick="filterTabel('status', 'AMAN')"
+              id="filter-status-AMAN"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
+            >
+              Aman
+            </button>
+            <button
+              onclick="filterTabel('status', 'WASPADA')"
+              id="filter-status-WASPADA"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
+            >
+              Waspada
+            </button>
+            <button
+              onclick="filterTabel('status', 'BAHAYA')"
+              id="filter-status-BAHAYA"
+              class="filter-btn-status px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
+            >
+              Bahaya
+            </button>
           </div>
 
           <div class="overflow-x-auto">
@@ -128,7 +219,9 @@
                 <tr class="text-left border-b border-slate-200">
                   <th class="pb-2 pr-4 text-slate-500 font-semibold">Waktu</th>
                   <th class="pb-2 pr-4 text-slate-500 font-semibold">Lantai</th>
-                  <th class="pb-2 pr-4 text-slate-500 font-semibold">Berat (kg)</th>
+                  <th class="pb-2 pr-4 text-slate-500 font-semibold">
+                    Berat (kg)
+                  </th>
                   <th class="pb-2 text-slate-500 font-semibold">Status</th>
                 </tr>
               </thead>
@@ -136,49 +229,61 @@
             </table>
           </div>
         </div>
-
       </div>
 
       <!-- ==================== TAB 3: TARE ==================== -->
       <div id="tab-tare" class="hidden">
-
         <div class="grid md:grid-cols-2 gap-6 mb-6">
-
           <!-- Tare per Lantai -->
           <div class="bg-white rounded-xl shadow p-6">
-            <h2 class="text-lg font-bold text-slate-700 mb-1">Kalibrasi per Lantai</h2>
-            <p class="text-xs text-slate-400 mb-4">Atur ulang titik nol sensor secara individual.</p>
-            <button onclick="requestTare('lantai1')"
-              class="tare-btn w-full mb-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors">
+            <h2 class="text-lg font-bold text-slate-700 mb-1">
+              Kalibrasi per Lantai
+            </h2>
+            <p class="text-xs text-slate-400 mb-4">
+              Atur ulang titik nol sensor secara individual.
+            </p>
+            <button
+              onclick="requestTare('lantai1')"
+              class="tare-btn w-full mb-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors"
+            >
               Tare Lantai 1
             </button>
-            <button onclick="requestTare('lantai2')"
-              class="tare-btn w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors">
+            <button
+              onclick="requestTare('lantai2')"
+              class="tare-btn w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors"
+            >
               Tare Lantai 2
             </button>
           </div>
 
           <!-- Tare Semua -->
           <div class="bg-white rounded-xl shadow p-6">
-            <h2 class="text-lg font-bold text-slate-700 mb-1">Kalibrasi Semua Sensor</h2>
-            <p class="text-xs text-slate-400 mb-4">Tare semua lantai sekaligus dalam satu perintah.</p>
-            <button onclick="requestTare('semua')"
-              class="tare-btn w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-colors">
+            <h2 class="text-lg font-bold text-slate-700 mb-1">
+              Kalibrasi Semua Sensor
+            </h2>
+            <p class="text-xs text-slate-400 mb-4">
+              Tare semua lantai sekaligus dalam satu perintah.
+            </p>
+            <button
+              onclick="requestTare('semua')"
+              class="tare-btn w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-colors"
+            >
               Tare Semua Sensor
             </button>
           </div>
-
         </div>
 
         <!-- Status Tare -->
         <div class="bg-white rounded-xl shadow p-5 mb-6">
           <h2 class="text-sm font-semibold text-slate-500 mb-1">Status Tare</h2>
-          <p id="tareMessage" class="font-semibold text-slate-500">Belum ada proses Tare.</p>
+          <p id="tareMessage" class="font-semibold text-slate-500">
+            Belum ada proses Tare.
+          </p>
         </div>
 
         <!-- Riwayat Tare -->
         <div class="bg-white rounded-xl shadow p-6">
-          <h2 class="text-lg font-bold text-slate-700 mb-4">Riwayat Tare (Sesi Ini)</h2>
+          <h2 class="text-lg font-bold text-slate-700 mb-4">Riwayat Tare</h2>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
@@ -190,145 +295,323 @@
               </thead>
               <tbody id="tabel-tare-history">
                 <tr id="tare-history-empty">
-                  <td colspan="3" class="py-4 text-center text-slate-400 text-sm italic">Belum ada riwayat tare.</td>
+                  <td
+                    colspan="3"
+                    class="py-4 text-center text-slate-400 text-sm italic"
+                  >
+                    Belum ada riwayat tare.
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
 
       <!-- ==================== TAB 4: KONFIGURASI ==================== -->
       <div id="tab-konfigurasi" class="hidden">
-          <div class="grid md:grid-cols-2 gap-6">
-  
-            <!-- Lantai 1 -->
-            <div class="bg-white rounded-xl shadow p-6">
-              <h2 class="text-lg font-bold text-slate-700 mb-1">Lantai 1</h2>
-              <p class="text-xs text-slate-400 mb-4">Konfigurasi threshold dan kalibrasi sensor lantai 1.</p>
-  
-              <div class="mb-5 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <label class="block text-xs font-semibold text-amber-800 mb-1">Cal Factor (faktor kalibrasi raw → kg)</label>
-                <input type="number" id="cal-1" min="1" step="0.1"
-                  class="w-full border border-amber-300 rounded px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              </div>
-  
-              <div class="space-y-4">
-                <div>
-                  <div class="flex justify-between text-xs text-slate-500 mb-1">
-                    <span class="font-semibold text-yellow-600">Warning</span>
-                    <span id="lbl-w1" class="font-bold text-slate-700">–</span>
-                  </div>
-                  <input type="range" id="slider-w1" min="0" max="5" step="0.1"
-                    class="w-full accent-yellow-500" oninput="onSlider(1,'w')" />
-                </div>
-                <div>
-                  <div class="flex justify-between text-xs text-slate-500 mb-1">
-                    <span class="font-semibold text-red-600">Danger</span>
-                    <span id="lbl-d1" class="font-bold text-slate-700">–</span>
-                  </div>
-                  <input type="range" id="slider-d1" min="0" max="5" step="0.1"
-                    class="w-full accent-red-500" oninput="onSlider(1,'d')" />
-                </div>
-                <div>
-                  <div class="flex justify-between text-xs text-slate-500 mb-1">
-                    <span class="font-semibold text-slate-600">Kapasitas Max</span>
-                    <span id="lbl-m1" class="font-bold text-slate-700">–</span>
-                  </div>
-                  <input type="range" id="slider-m1" min="0" max="5" step="0.1"
-                    class="w-full accent-slate-500" oninput="onSlider(1,'m')" />
-                </div>
-              </div>
-  
-              <div id="cfg-msg-1" class="mt-3 text-sm font-semibold hidden"></div>
-              <button onclick="simpanConfig(1)"
-                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">
-                Simpan Lantai 1
-              </button>
-            </div>
-  
-            <!-- Lantai 2 -->
-            <div class="bg-white rounded-xl shadow p-6">
-              <h2 class="text-lg font-bold text-slate-700 mb-1">Lantai 2</h2>
-              <p class="text-xs text-slate-400 mb-4">Konfigurasi threshold dan kalibrasi sensor lantai 2.</p>
-  
-              <div class="mb-5 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <label class="block text-xs font-semibold text-amber-800 mb-1">Cal Factor (faktor kalibrasi raw → kg)</label>
-                <input type="number" id="cal-2" min="1" step="0.1"
-                  class="w-full border border-amber-300 rounded px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              </div>
-  
-              <div class="space-y-4">
-                <div>
-                  <div class="flex justify-between text-xs text-slate-500 mb-1">
-                    <span class="font-semibold text-yellow-600">Warning</span>
-                    <span id="lbl-w2" class="font-bold text-slate-700">–</span>
-                  </div>
-                  <input type="range" id="slider-w2" min="0" max="5" step="0.1"
-                    class="w-full accent-yellow-500" oninput="onSlider(2,'w')" />
-                </div>
-                <div>
-                  <div class="flex justify-between text-xs text-slate-500 mb-1">
-                    <span class="font-semibold text-red-600">Danger</span>
-                    <span id="lbl-d2" class="font-bold text-slate-700">–</span>
-                  </div>
-                  <input type="range" id="slider-d2" min="0" max="5" step="0.1"
-                    class="w-full accent-red-500" oninput="onSlider(2,'d')" />
-                </div>
-                <div>
-                  <div class="flex justify-between text-xs text-slate-500 mb-1">
-                    <span class="font-semibold text-slate-600">Kapasitas Max</span>
-                    <span id="lbl-m2" class="font-bold text-slate-700">–</span>
-                  </div>
-                  <input type="range" id="slider-m2" min="0" max="5" step="0.1"
-                    class="w-full accent-slate-500" oninput="onSlider(2,'m')" />
-                </div>
-              </div>
-  
-              <div id="cfg-msg-2" class="mt-3 text-sm font-semibold hidden"></div>
-              <button onclick="simpanConfig(2)"
-                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">
-                Simpan Lantai 2
-              </button>
-            </div>
-  
-        </div>
-      </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Lantai 1 -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-lg font-bold text-slate-700 mb-1">Lantai 1</h2>
+            <p class="text-xs text-slate-400 mb-4">
+              Konfigurasi threshold dan kalibrasi sensor lantai 1.
+            </p>
 
-      <!-- ==================== DIALOG LOGIN ==================== -->
-      <div id="login-dialog" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full mx-4">
-          <h3 class="text-base font-bold text-slate-800 mb-1">Login Operator</h3>
-          <p class="text-sm text-slate-500 mb-4">Masuk untuk mengubah konfigurasi.</p>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Username</label>
-          <input type="text" id="login-username" autocomplete="username"
-            class="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
-          <input type="password" id="login-password" autocomplete="current-password"
-            class="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-1 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-          <p id="login-error" class="text-xs text-red-600 mb-3 hidden">Username atau password salah.</p>
-          <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors">Masuk</button>
-        </div>
-      </div>
+            <div
+              class="mb-5 p-3 bg-amber-50 border border-amber-200 rounded-lg"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-semibold text-amber-800"
+                  >Cal Factor (faktor kalibrasi raw → kg)</label
+                >
+                <button
+                  onclick="bukaCalibrateDialog(1)"
+                  class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold px-2.5 py-1 rounded-lg transition-colors"
+                >
+                  Kalibrasi
+                </button>
+              </div>
+              <input
+                type="number"
+                id="cal-1"
+                min="1"
+                step="0.1"
+                class="w-full border border-amber-300 rounded px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
 
-      <!-- ==================== DIALOG KONFIRMASI CAL FACTOR ==================== -->
-      <div id="cal-dialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
-          <h3 class="text-base font-bold text-slate-800 mb-1">Konfirmasi Perubahan Cal Factor</h3>
-          <p id="cal-dialog-desc" class="text-sm text-slate-500 mb-4"></p>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Ketik nilai baru untuk konfirmasi:</label>
-          <input type="number" id="cal-dialog-input" step="0.1"
-            class="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-1 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-          <p id="cal-dialog-error" class="text-xs text-red-600 mb-3 hidden">Nilai tidak cocok. Coba lagi.</p>
-          <div class="flex gap-3">
-            <button onclick="tutupCalDialog()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold py-2 rounded-lg transition-colors">Batal</button>
-            <button onclick="konfirmasiCal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors">Konfirmasi</button>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                  <span class="font-semibold text-yellow-600">Warning</span>
+                  <span id="lbl-w1" class="font-bold text-slate-700">–</span>
+                </div>
+                <input
+                  type="range"
+                  id="slider-w1"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-full accent-yellow-500"
+                  oninput="onSlider(1, 'w')"
+                />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                  <span class="font-semibold text-red-600">Danger</span>
+                  <span id="lbl-d1" class="font-bold text-slate-700">–</span>
+                </div>
+                <input
+                  type="range"
+                  id="slider-d1"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-full accent-red-500"
+                  oninput="onSlider(1, 'd')"
+                />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                  <span class="font-semibold text-slate-600"
+                    >Kapasitas Max</span
+                  >
+                  <span id="lbl-m1" class="font-bold text-slate-700">–</span>
+                </div>
+                <input
+                  type="range"
+                  id="slider-m1"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-full accent-slate-500"
+                  oninput="onSlider(1, 'm')"
+                />
+              </div>
+            </div>
+
+            <div id="cfg-msg-1" class="mt-3 text-sm font-semibold hidden"></div>
+            <button
+              onclick="simpanConfig(1)"
+              class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors"
+            >
+              Simpan Lantai 1
+            </button>
+          </div>
+
+          <!-- Lantai 2 -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-lg font-bold text-slate-700 mb-1">Lantai 2</h2>
+            <p class="text-xs text-slate-400 mb-4">
+              Konfigurasi threshold dan kalibrasi sensor lantai 2.
+            </p>
+
+            <div
+              class="mb-5 p-3 bg-amber-50 border border-amber-200 rounded-lg"
+            >
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-semibold text-amber-800"
+                  >Cal Factor (faktor kalibrasi raw → kg)</label
+                >
+                <button
+                  onclick="bukaCalibrateDialog(2)"
+                  class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold px-2.5 py-1 rounded-lg transition-colors"
+                >
+                  Kalibrasi
+                </button>
+              </div>
+              <input
+                type="number"
+                id="cal-2"
+                min="1"
+                step="0.1"
+                class="w-full border border-amber-300 rounded px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                  <span class="font-semibold text-yellow-600">Warning</span>
+                  <span id="lbl-w2" class="font-bold text-slate-700">–</span>
+                </div>
+                <input
+                  type="range"
+                  id="slider-w2"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-full accent-yellow-500"
+                  oninput="onSlider(2, 'w')"
+                />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                  <span class="font-semibold text-red-600">Danger</span>
+                  <span id="lbl-d2" class="font-bold text-slate-700">–</span>
+                </div>
+                <input
+                  type="range"
+                  id="slider-d2"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-full accent-red-500"
+                  oninput="onSlider(2, 'd')"
+                />
+              </div>
+              <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                  <span class="font-semibold text-slate-600"
+                    >Kapasitas Max</span
+                  >
+                  <span id="lbl-m2" class="font-bold text-slate-700">–</span>
+                </div>
+                <input
+                  type="range"
+                  id="slider-m2"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  class="w-full accent-slate-500"
+                  oninput="onSlider(2, 'm')"
+                />
+              </div>
+            </div>
+
+            <div id="cfg-msg-2" class="mt-3 text-sm font-semibold hidden"></div>
+            <button
+              onclick="simpanConfig(2)"
+              class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors"
+            >
+              Simpan Lantai 2
+            </button>
           </div>
         </div>
       </div>
 
-    </div><!-- end max-w-5xl -->
+      <!-- ==================== DIALOG LOGIN ==================== -->
+      <div
+        id="login-dialog"
+        class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden"
+      >
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full mx-4">
+          <h3 class="text-base font-bold text-slate-800 mb-1">
+            Login Operator
+          </h3>
+          <p class="text-sm text-slate-500 mb-4">
+            Masuk untuk mengubah konfigurasi.
+          </p>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Username</label
+          >
+          <input
+            type="text"
+            id="login-username"
+            autocomplete="username"
+            class="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="login-password"
+            autocomplete="current-password"
+            class="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <p id="login-error" class="text-xs text-red-600 mb-3 hidden">
+            Username atau password salah.
+          </p>
+          <button
+            onclick="doLogin()"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+          >
+            Masuk
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== DIALOG KONFIRMASI CAL FACTOR ==================== -->
+      <div
+        id="cal-dialog"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"
+      >
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+          <h3 class="text-base font-bold text-slate-800 mb-1">
+            Konfirmasi Perubahan Cal Factor
+          </h3>
+          <p id="cal-dialog-desc" class="text-sm text-slate-500 mb-4"></p>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Ketik nilai baru untuk konfirmasi:</label
+          >
+          <input
+            type="number"
+            id="cal-dialog-input"
+            step="0.1"
+            class="w-full border border-slate-300 rounded px-3 py-2 text-sm mb-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <p id="cal-dialog-error" class="text-xs text-red-600 mb-3 hidden">
+            Nilai tidak cocok. Coba lagi.
+          </p>
+          <div class="flex gap-3">
+            <button
+              onclick="tutupCalDialog()"
+              class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold py-2 rounded-lg transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              onclick="konfirmasiCal()"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+            >
+              Konfirmasi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== DIALOG KALIBRASI ==================== -->
+      <div
+        id="calibrate-dialog"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"
+      >
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+          <h3 class="text-base font-bold text-slate-800 mb-1">
+            Kalibrasi Sensor
+          </h3>
+          <p id="calibrate-dialog-desc" class="text-sm text-slate-500 mb-4"></p>
+          <div
+            class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-4 text-sm text-amber-800"
+          >
+            <span class="font-semibold">Perhatian:</span> Letakkan beban
+            <strong>200 gram</strong> di atas sensor lantai yang akan
+            dikalibrasi sebelum melanjutkan.
+          </div>
+          <p
+            id="calibrate-dialog-status"
+            class="text-sm font-semibold text-slate-500 mb-3 hidden"
+          ></p>
+          <div class="flex gap-3">
+            <button
+              onclick="tutupCalibrateDialog()"
+              class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold py-2 rounded-lg transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              id="calibrate-dialog-confirm"
+              onclick="konfirmasiKalibrasi()"
+              class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+            >
+              Ya, Kalibrasi Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end max-w-5xl -->
 
     <script>
       // ==================== INIT ====================
@@ -343,80 +626,87 @@
 
       async function checkSession() {
         try {
-          const res = await fetch('/api/me');
+          const res = await fetch("/api/me");
           const json = await res.json();
           setAuthState(json.user);
-        } catch (e) { setAuthState(null); }
+        } catch (e) {
+          setAuthState(null);
+        }
       }
 
       function setAuthState(user) {
         currentUser = user;
-        const info = document.getElementById('login-info');
-        const btnLogout = document.getElementById('btn-logout');
-        const btnLogin = document.getElementById('btn-login-show');
+        const info = document.getElementById("login-info");
+        const btnLogout = document.getElementById("btn-logout");
+        const btnLogin = document.getElementById("btn-login-show");
         if (user) {
           info.textContent = user.username;
-          info.classList.remove('hidden');
-          btnLogout.classList.remove('hidden');
-          btnLogin.classList.add('hidden');
+          info.classList.remove("hidden");
+          btnLogout.classList.remove("hidden");
+          btnLogin.classList.add("hidden");
         } else {
-          info.classList.add('hidden');
-          btnLogout.classList.add('hidden');
-          btnLogin.classList.remove('hidden');
+          info.classList.add("hidden");
+          btnLogout.classList.add("hidden");
+          btnLogin.classList.remove("hidden");
         }
       }
 
       function tampilkanLogin(callback) {
         afterLoginCallback = callback || null;
-        document.getElementById('login-username').value = '';
-        document.getElementById('login-password').value = '';
-        document.getElementById('login-error').classList.add('hidden');
-        document.getElementById('login-dialog').classList.remove('hidden');
-        setTimeout(() => document.getElementById('login-username').focus(), 50);
+        document.getElementById("login-username").value = "";
+        document.getElementById("login-password").value = "";
+        document.getElementById("login-error").classList.add("hidden");
+        document.getElementById("login-dialog").classList.remove("hidden");
+        setTimeout(() => document.getElementById("login-username").focus(), 50);
       }
 
       async function doLogin() {
-        const username = document.getElementById('login-username').value.trim();
-        const password = document.getElementById('login-password').value;
-        const errEl = document.getElementById('login-error');
-        errEl.classList.add('hidden');
+        const username = document.getElementById("login-username").value.trim();
+        const password = document.getElementById("login-password").value;
+        const errEl = document.getElementById("login-error");
+        errEl.classList.add("hidden");
         try {
-          const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
           });
           const json = await res.json();
           if (!res.ok) {
-            errEl.classList.remove('hidden');
+            errEl.classList.remove("hidden");
             return;
           }
-          document.getElementById('login-dialog').classList.add('hidden');
+          document.getElementById("login-dialog").classList.add("hidden");
           setAuthState(json.user);
-          if (afterLoginCallback) { afterLoginCallback(); afterLoginCallback = null; }
+          if (afterLoginCallback) {
+            afterLoginCallback();
+            afterLoginCallback = null;
+          }
         } catch (e) {
-          errEl.classList.remove('hidden');
+          errEl.classList.remove("hidden");
         }
       }
 
       // Enter key di form login
-      document.getElementById('login-password').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') doLogin();
-      });
+      document
+        .getElementById("login-password")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") doLogin();
+        });
 
       async function doLogout() {
-        await fetch('/api/logout', { method: 'POST' });
+        await fetch("/api/logout", { method: "POST" });
         setAuthState(null);
       }
 
       checkSession();
 
-      const KAPASITAS = { 1: 2, 2: 1 }; // kg per lantai
+      const KAPASITAS = { 1: 2, 2: 1 }; // nilai awal, akan diupdate dari DB
       const MAX_POINTS = 50;
 
       let lastDataTime = null;
       let lastUpdatedInterval = null;
-      let currentFilter = { lantai: 'semua', status: 'semua' };
+      let currentFilter = { lantai: "semua", status: "semua" };
 
       // Simpan data historis untuk filter tabel
       let historisList = [];
@@ -424,31 +714,34 @@
       // ==================== TAB NAVIGATION ====================
 
       function switchTab(name) {
-        ['monitor', 'historis', 'tare', 'konfigurasi'].forEach(t => {
-          document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
-          const btn = document.getElementById('tab-btn-' + t);
+        ["monitor", "historis", "tare", "konfigurasi"].forEach((t) => {
+          document
+            .getElementById("tab-" + t)
+            .classList.toggle("hidden", t !== name);
+          const btn = document.getElementById("tab-btn-" + t);
           if (t === name) {
-            btn.classList.add('border-blue-600', 'text-blue-600');
-            btn.classList.remove('border-transparent', 'text-slate-600');
+            btn.classList.add("border-blue-600", "text-blue-600");
+            btn.classList.remove("border-transparent", "text-slate-600");
           } else {
-            btn.classList.remove('border-blue-600', 'text-blue-600');
-            btn.classList.add('border-transparent', 'text-slate-600');
+            btn.classList.remove("border-blue-600", "text-blue-600");
+            btn.classList.add("border-transparent", "text-slate-600");
           }
         });
+        if (name === "tare") fetchTareHistory();
       }
 
       // ==================== CONNECTION ====================
 
-      socket.on('connect', () => {
-        const el = document.getElementById('connection');
-        el.textContent = 'Terhubung';
-        el.className = 'text-sm font-semibold text-green-600';
+      socket.on("connect", () => {
+        const el = document.getElementById("connection");
+        el.textContent = "Terhubung";
+        el.className = "text-sm font-semibold text-green-600";
       });
 
-      socket.on('disconnect', () => {
-        const el = document.getElementById('connection');
-        el.textContent = 'Terputus';
-        el.className = 'text-sm font-semibold text-red-600';
+      socket.on("disconnect", () => {
+        const el = document.getElementById("connection");
+        el.textContent = "Terputus";
+        el.className = "text-sm font-semibold text-red-600";
       });
 
       // ==================== LAST UPDATED TIMER ====================
@@ -456,23 +749,23 @@
       function startLastUpdatedTimer() {
         if (lastUpdatedInterval) clearInterval(lastUpdatedInterval);
         lastUpdatedInterval = setInterval(() => {
-          const el = document.getElementById('lastUpdated');
-          const warn = document.getElementById('sensorWarning');
+          const el = document.getElementById("lastUpdated");
+          const warn = document.getElementById("sensorWarning");
           if (!lastDataTime) {
-            el.textContent = 'Menunggu data...';
-            warn.classList.add('hidden');
+            el.textContent = "Menunggu data...";
+            warn.classList.add("hidden");
             return;
           }
           const sec = Math.floor((Date.now() - lastDataTime) / 1000);
           if (sec < 60) {
-            el.textContent = sec + ' detik yang lalu';
+            el.textContent = sec + " detik yang lalu";
           } else {
-            el.textContent = Math.floor(sec / 60) + ' menit yang lalu';
+            el.textContent = Math.floor(sec / 60) + " menit yang lalu";
           }
           if (sec > 30) {
-            warn.classList.remove('hidden');
+            warn.classList.remove("hidden");
           } else {
-            warn.classList.add('hidden');
+            warn.classList.add("hidden");
           }
         }, 1000);
       }
@@ -484,62 +777,87 @@
       function makeGaugeOptions(label, kapasitas) {
         return {
           series: [0],
-          chart: { type: 'radialBar', height: 220, sparkline: { enabled: true } },
+          chart: {
+            type: "radialBar",
+            height: 220,
+            sparkline: { enabled: true },
+          },
           plotOptions: {
             radialBar: {
               startAngle: -135,
               endAngle: 135,
-              hollow: { size: '55%' },
-              track: { background: '#e2e8f0', strokeWidth: '100%' },
+              hollow: { size: "55%" },
+              track: { background: "#e2e8f0", strokeWidth: "100%" },
               dataLabels: {
-                name: { show: true, offsetY: -8, fontSize: '12px', color: '#94a3b8' },
+                name: {
+                  show: true,
+                  offsetY: -8,
+                  fontSize: "12px",
+                  color: "#94a3b8",
+                },
                 value: {
-                  show: true, fontSize: '22px', fontWeight: 700, color: '#1e293b',
+                  show: true,
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#1e293b",
                   offsetY: 4,
-                  formatter: (val) => ((val / 100) * kapasitas).toFixed(2) + ' kg'
-                }
-              }
-            }
+                  formatter: (val) =>
+                    ((val / 100) * kapasitas).toFixed(2) + " kg",
+                },
+              },
+            },
           },
-          fill: { colors: ['#22c55e'] },
+          fill: { colors: ["#22c55e"] },
           labels: [label],
-          stroke: { lineCap: 'round' }
+          stroke: { lineCap: "round" },
         };
       }
 
-      const gauge1 = new ApexCharts(document.getElementById('gauge-lantai1'), makeGaugeOptions('Lantai 1', 2));
-      const gauge2 = new ApexCharts(document.getElementById('gauge-lantai2'), makeGaugeOptions('Lantai 2', 1));
+      const gauge1 = new ApexCharts(
+        document.getElementById("gauge-lantai1"),
+        makeGaugeOptions("Lantai 1", 2),
+      );
+      const gauge2 = new ApexCharts(
+        document.getElementById("gauge-lantai2"),
+        makeGaugeOptions("Lantai 2", 1),
+      );
       gauge1.render();
       gauge2.render();
 
       const gaugeColors = {
-        AMAN: '#22c55e',
-        WASPADA: '#eab308',
-        BAHAYA: '#ef4444'
+        AMAN: "#22c55e",
+        WASPADA: "#eab308",
+        BAHAYA: "#ef4444",
       };
 
       function updateGauge(chart, berat, kapasitas, status) {
         const pct = Math.min((berat / kapasitas) * 100, 100);
         chart.updateSeries([parseFloat(pct.toFixed(1))]);
-        chart.updateOptions({ fill: { colors: [gaugeColors[status] || '#22c55e'] } }, false, false);
+        chart.updateOptions(
+          { fill: { colors: [gaugeColors[status] || "#22c55e"] } },
+          false,
+          false,
+        );
       }
 
       // ==================== UPDATE FLOOR ====================
 
       function updateFloor(id, item) {
         // Teks berat
-        document.getElementById('weight' + id).textContent = Number(item.berat_kg).toFixed(2) + ' kg';
+        document.getElementById("weight" + id).textContent =
+          Number(item.berat_kg).toFixed(2) + " kg";
 
         // Status badge
-        const statusEl = document.getElementById('status' + id);
+        const statusEl = document.getElementById("status" + id);
         statusEl.textContent = item.status;
         const styles = {
-          AMAN: 'bg-green-100 text-green-700',
-          WASPADA: 'bg-yellow-100 text-yellow-700',
-          BAHAYA: 'bg-red-100 text-red-700'
+          AMAN: "bg-green-100 text-green-700",
+          WASPADA: "bg-yellow-100 text-yellow-700",
+          BAHAYA: "bg-red-100 text-red-700",
         };
-        statusEl.className = 'inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold ' +
-          (styles[item.status] || 'bg-slate-100 text-slate-700');
+        statusEl.className =
+          "inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-semibold " +
+          (styles[item.status] || "bg-slate-100 text-slate-700");
 
         // Gauge
         const chart = id === 1 ? gauge1 : gauge2;
@@ -550,38 +868,41 @@
 
       const lineChartOptions = {
         series: [
-          { name: 'Lantai 1', data: [] },
-          { name: 'Lantai 2', data: [] }
+          { name: "Lantai 1", data: [] },
+          { name: "Lantai 2", data: [] },
         ],
         chart: {
-          type: 'line',
+          type: "line",
           height: 300,
           animations: { enabled: false },
           toolbar: { show: false },
-          zoom: { enabled: false }
+          zoom: { enabled: false },
         },
-        colors: ['#3b82f6', '#f97316'],
-        stroke: { curve: 'smooth', width: 2 },
+        colors: ["#3b82f6", "#f97316"],
+        stroke: { curve: "smooth", width: 2 },
         xaxis: {
-          type: 'datetime',
+          type: "datetime",
           labels: {
             datetimeUTC: false,
-            format: 'HH:mm:ss'
-          }
+            format: "HH:mm:ss",
+          },
         },
         yaxis: {
-          title: { text: 'Berat (kg)' },
+          title: { text: "Berat (kg)" },
           min: 0,
-          labels: { formatter: (v) => v.toFixed(2) }
+          labels: { formatter: (v) => v.toFixed(2) },
         },
         tooltip: {
-          x: { format: 'dd MMM HH:mm:ss' }
+          x: { format: "dd MMM HH:mm:ss" },
         },
-        legend: { position: 'top' },
-        grid: { borderColor: '#f1f5f9' }
+        legend: { position: "top" },
+        grid: { borderColor: "#f1f5f9" },
       };
 
-      const lineChart = new ApexCharts(document.getElementById('chart-historis'), lineChartOptions);
+      const lineChart = new ApexCharts(
+        document.getElementById("chart-historis"),
+        lineChartOptions,
+      );
       lineChart.render();
 
       // Data series buffer
@@ -597,42 +918,56 @@
           series2.push(point);
           if (series2.length > MAX_POINTS) series2.shift();
         }
-        lineChart.updateSeries([
-          { name: 'Lantai 1', data: [...series1] },
-          { name: 'Lantai 2', data: [...series2] }
-        ], false);
+        lineChart.updateSeries(
+          [
+            { name: "Lantai 1", data: [...series1] },
+            { name: "Lantai 2", data: [...series2] },
+          ],
+          false,
+        );
       }
 
       // ==================== TABEL HISTORIS ====================
 
       const statusRowClass = {
-        AMAN: 'bg-green-50',
-        WASPADA: 'bg-yellow-50',
-        BAHAYA: 'bg-red-50'
+        AMAN: "bg-green-50",
+        WASPADA: "bg-yellow-50",
+        BAHAYA: "bg-red-50",
       };
 
       function formatTime(isoOrMs) {
         const d = new Date(isoOrMs);
-        return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        return d.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
       }
 
       function renderTabel() {
-        const tbody = document.getElementById('tabel-historis');
-        const filtered = historisList.filter(r => {
-          const lantaiOk = currentFilter.lantai === 'semua' || String(r.id_rak) === currentFilter.lantai;
-          const statusOk = currentFilter.status === 'semua' || r.status_beban === currentFilter.status;
+        const tbody = document.getElementById("tabel-historis");
+        const filtered = historisList.filter((r) => {
+          const lantaiOk =
+            currentFilter.lantai === "semua" ||
+            String(r.id_rak) === currentFilter.lantai;
+          const statusOk =
+            currentFilter.status === "semua" ||
+            r.status_beban === currentFilter.status;
           return lantaiOk && statusOk;
         });
 
-        tbody.innerHTML = '';
+        tbody.innerHTML = "";
         if (filtered.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-400 text-sm italic">Belum ada data.</td></tr>';
+          tbody.innerHTML =
+            '<tr><td colspan="4" class="py-4 text-center text-slate-400 text-sm italic">Belum ada data.</td></tr>';
           return;
         }
         // Terbaru di atas
-        [...filtered].reverse().forEach(r => {
-          const tr = document.createElement('tr');
-          tr.className = (statusRowClass[r.status_beban] || '') + ' border-b border-slate-100';
+        [...filtered].reverse().forEach((r) => {
+          const tr = document.createElement("tr");
+          tr.className =
+            (statusRowClass[r.status_beban] || "") +
+            " border-b border-slate-100";
           tr.innerHTML = `
             <td class="py-2 pr-4 text-slate-600">${formatTime(r.created_at)}</td>
             <td class="py-2 pr-4 text-slate-600">Lantai ${r.id_rak}</td>
@@ -644,19 +979,26 @@
       }
 
       function statusBadgeClass(s) {
-        return s === 'AMAN' ? 'bg-green-100 text-green-700'
-          : s === 'WASPADA' ? 'bg-yellow-100 text-yellow-700'
-          : s === 'BAHAYA' ? 'bg-red-100 text-red-700'
-          : 'bg-slate-100 text-slate-600';
+        return s === "AMAN"
+          ? "bg-green-100 text-green-700"
+          : s === "WASPADA"
+            ? "bg-yellow-100 text-yellow-700"
+            : s === "BAHAYA"
+              ? "bg-red-100 text-red-700"
+              : "bg-slate-100 text-slate-600";
       }
 
       function filterTabel(type, val) {
         currentFilter[type] = val;
-        const cls = 'filter-btn-' + type;
-        document.querySelectorAll('.' + cls).forEach(btn => {
-          const isActive = btn.id === 'filter-' + type + '-' + val;
-          btn.className = cls + ' px-3 py-1 text-xs font-semibold rounded-full ' +
-            (isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200');
+        const cls = "filter-btn-" + type;
+        document.querySelectorAll("." + cls).forEach((btn) => {
+          const isActive = btn.id === "filter-" + type + "-" + val;
+          btn.className =
+            cls +
+            " px-3 py-1 text-xs font-semibold rounded-full " +
+            (isActive
+              ? "bg-blue-600 text-white"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200");
         });
         renderTabel();
       }
@@ -670,16 +1012,20 @@
 
       async function fetchHistory() {
         try {
-          const res = await fetch('/api/history');
+          const res = await fetch("/api/history");
           const json = await res.json();
           if (!json.success) return;
-          json.data.forEach(r => {
+          json.data.forEach((r) => {
             addToHistorisBuffer(r);
-            appendToChart(r.id_rak, r.berat_kg, new Date(r.created_at).getTime());
+            appendToChart(
+              r.id_rak,
+              r.berat_kg,
+              new Date(r.created_at).getTime(),
+            );
           });
           renderTabel();
         } catch (e) {
-          console.warn('[history] Gagal fetch:', e.message);
+          console.warn("[history] Gagal fetch:", e.message);
         }
       }
 
@@ -687,9 +1033,9 @@
 
       // ==================== SENSOR UPDATE ====================
 
-      socket.on('sensor-update', (data) => {
+      socket.on("sensor-update", (data) => {
         lastDataTime = Date.now();
-        data.forEach(item => {
+        data.forEach((item) => {
           if (item.id_rak === 1) updateFloor(1, item);
           if (item.id_rak === 2) updateFloor(2, item);
 
@@ -698,7 +1044,7 @@
             id_rak: item.id_rak,
             berat_kg: item.berat_kg,
             status_beban: item.status,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
           };
           addToHistorisBuffer(row);
           appendToChart(item.id_rak, item.berat_kg, Date.now());
@@ -708,70 +1054,137 @@
 
       // ==================== TARE FUNCTIONS ====================
 
-      const tareMessage = document.getElementById('tareMessage');
+      const tareMessage = document.getElementById("tareMessage");
 
       function setTareBusy(busy) {
-        document.querySelectorAll('.tare-btn').forEach(btn => {
+        document.querySelectorAll(".tare-btn").forEach((btn) => {
           btn.disabled = busy;
-          btn.classList.toggle('opacity-50', busy);
-          btn.classList.toggle('cursor-not-allowed', busy);
+          btn.classList.toggle("opacity-50", busy);
+          btn.classList.toggle("cursor-not-allowed", busy);
         });
       }
 
       async function requestTare(target) {
+        if (!currentUser) {
+          tareMessage.textContent = "Harus login dulu untuk melakukan Tare.";
+          tareMessage.className = "font-semibold text-yellow-600";
+          tampilkanLogin(() => requestTare(target));
+          return;
+        }
+
         try {
           setTareBusy(true);
-          tareMessage.textContent = 'Mengirim perintah Tare...';
-          tareMessage.className = 'font-semibold text-blue-600';
+          tareMessage.textContent = "Mengirim perintah Tare...";
+          tareMessage.className = "font-semibold text-blue-600";
 
-          const response = await fetch('/api/tare', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ target })
+          const response = await fetch("/api/tare", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ target }),
           });
           const result = await response.json();
+          if (response.status === 401) {
+            setAuthState(null);
+            setTareBusy(false);
+            tareMessage.textContent = "Sesi habis, silakan login ulang.";
+            tareMessage.className = "font-semibold text-yellow-600";
+            tampilkanLogin(() => requestTare(target));
+            return;
+          }
           if (!response.ok) throw new Error(result.message);
 
-          const targetLabel = target === 'lantai1' ? 'Lantai 1' : target === 'lantai2' ? 'Lantai 2' : 'Semua Sensor';
+          const targetLabel =
+            target === "lantai1"
+              ? "Lantai 1"
+              : target === "lantai2"
+                ? "Lantai 2"
+                : "Semua Sensor";
           tareMessage.textContent = `Perintah Tare ${targetLabel} berhasil dibuat. Menunggu ESP32...`;
         } catch (error) {
-          tareMessage.textContent = 'Gagal: ' + error.message;
-          tareMessage.className = 'font-semibold text-red-600';
+          tareMessage.textContent = "Gagal: " + error.message;
+          tareMessage.className = "font-semibold text-red-600";
           setTareBusy(false);
         }
       }
 
-      socket.on('tare-status', (data) => {
-        const label = data.target === 'lantai1' ? 'Lantai 1' : data.target === 'lantai2' ? 'Lantai 2' : 'Semua Sensor';
-        if (data.status === 'pending') {
+      socket.on("tare-status", (data) => {
+        const label =
+          data.target === "lantai1"
+            ? "Lantai 1"
+            : data.target === "lantai2"
+              ? "Lantai 2"
+              : "Semua Sensor";
+        if (data.status === "pending") {
           tareMessage.textContent = `Tare ${label} menunggu ESP32...`;
-        } else if (data.status === 'processing') {
+        } else if (data.status === "processing") {
           tareMessage.textContent = `Tare ${label} sedang diproses ESP32...`;
         }
-        tareMessage.className = 'font-semibold text-blue-600';
+        tareMessage.className = "font-semibold text-blue-600";
       });
 
-      socket.on('tare-result', (data) => {
+      function targetLabel(target) {
+        return target === "lantai1"
+          ? "Lantai 1"
+          : target === "lantai2"
+            ? "Lantai 2"
+            : "Semua Sensor";
+      }
+
+      function renderTareHistoryRow(waktu, target, status, prepend = false) {
+        const isSuccess = status === "success";
+        const tbody = document.getElementById("tabel-tare-history");
+        const emptyRow = document.getElementById("tare-history-empty");
+        if (emptyRow) emptyRow.remove();
+        const tr = document.createElement("tr");
+        tr.className =
+          (isSuccess ? "bg-green-50" : "bg-red-50") +
+          " border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="py-2 pr-4 text-slate-600">${formatTime(waktu)}</td>
+          <td class="py-2 pr-4 text-slate-700 font-medium">${targetLabel(target)}</td>
+          <td class="py-2 font-semibold ${isSuccess ? "text-green-700" : "text-red-700"}">${isSuccess ? "Berhasil" : "Gagal"}</td>
+        `;
+        if (prepend) tbody.insertBefore(tr, tbody.firstChild);
+        else tbody.appendChild(tr);
+      }
+
+      let tareHistoryLoaded = false;
+
+      async function fetchTareHistory() {
+        if (tareHistoryLoaded) return;
+        try {
+          const res = await fetch("/api/tare/history");
+          const json = await res.json();
+          if (!json.success || !json.data.length) return;
+          // Data sudah DESC dari DB, tampilkan dari bawah ke atas (terbaru di atas)
+          const tbody = document.getElementById("tabel-tare-history");
+          const emptyRow = document.getElementById("tare-history-empty");
+          if (emptyRow) emptyRow.remove();
+          tbody.innerHTML = "";
+          json.data.forEach((r) => {
+            renderTareHistoryRow(r.created_at, r.target, r.status, false);
+          });
+          tareHistoryLoaded = true;
+        } catch (e) {
+          console.warn("[tare-history] Gagal fetch:", e.message);
+        }
+      }
+
+      socket.on("tare-result", (data) => {
         // Update status message
         tareMessage.textContent = data.message;
-        tareMessage.className = 'font-semibold ' + (data.status === 'success' ? 'text-green-600' : 'text-red-600');
+        tareMessage.className =
+          "font-semibold " +
+          (data.status === "success" ? "text-green-600" : "text-red-600");
         setTareBusy(false);
 
-        // Tambah ke riwayat tare
-        const emptyRow = document.getElementById('tare-history-empty');
-        if (emptyRow) emptyRow.remove();
-
-        const label = data.target === 'lantai1' ? 'Lantai 1' : data.target === 'lantai2' ? 'Lantai 2' : 'Semua Sensor';
-        const isSuccess = data.status === 'success';
-        const tbody = document.getElementById('tabel-tare-history');
-        const tr = document.createElement('tr');
-        tr.className = (isSuccess ? 'bg-green-50' : 'bg-red-50') + ' border-b border-slate-100';
-        tr.innerHTML = `
-          <td class="py-2 pr-4 text-slate-600">${formatTime(data.completedAt || new Date())}</td>
-          <td class="py-2 pr-4 text-slate-700 font-medium">${label}</td>
-          <td class="py-2 font-semibold ${isSuccess ? 'text-green-700' : 'text-red-700'}">${isSuccess ? 'Berhasil' : 'Gagal'}</td>
-        `;
-        tbody.insertBefore(tr, tbody.firstChild);
+        // Tambah baris baru di paling atas (real-time)
+        renderTareHistoryRow(
+          data.completedAt || new Date().toISOString(),
+          data.target,
+          data.status,
+          true,
+        );
       });
 
       // ==================== KONFIGURASI ====================
@@ -782,135 +1195,161 @@
       let calPendingCallback = null;
 
       function setSliderLabel(lantai, tipe, val) {
-        document.getElementById('lbl-' + tipe + lantai).textContent = parseFloat(val).toFixed(1) + ' kg';
+        document.getElementById("lbl-" + tipe + lantai).textContent =
+          parseFloat(val).toFixed(1) + " kg";
       }
 
       function onSlider(lantai, tipe) {
-        const w = parseFloat(document.getElementById('slider-w' + lantai).value);
-        const d = parseFloat(document.getElementById('slider-d' + lantai).value);
-        const m = parseFloat(document.getElementById('slider-m' + lantai).value);
+        const w = parseFloat(
+          document.getElementById("slider-w" + lantai).value,
+        );
+        const d = parseFloat(
+          document.getElementById("slider-d" + lantai).value,
+        );
+        const m = parseFloat(
+          document.getElementById("slider-m" + lantai).value,
+        );
         const STEP = 0.1;
 
-        if (tipe === 'w') {
+        if (tipe === "w") {
           // Warning mendorong Danger ke atas
           if (w >= d) {
             const newD = Math.min(parseFloat((w + STEP).toFixed(1)), 5);
-            document.getElementById('slider-d' + lantai).value = newD;
-            setSliderLabel(lantai, 'd', newD);
+            document.getElementById("slider-d" + lantai).value = newD;
+            setSliderLabel(lantai, "d", newD);
             // Danger mendorong Max ke atas
             const newM = Math.min(parseFloat((newD + STEP).toFixed(1)), 5);
             if (newD >= m) {
-              document.getElementById('slider-m' + lantai).value = newM;
-              setSliderLabel(lantai, 'm', newM);
+              document.getElementById("slider-m" + lantai).value = newM;
+              setSliderLabel(lantai, "m", newM);
             }
           }
-          setSliderLabel(lantai, 'w', w);
-        } else if (tipe === 'd') {
+          setSliderLabel(lantai, "w", w);
+        } else if (tipe === "d") {
           // Danger mendorong Max ke atas
           if (d >= m) {
             const newM = Math.min(parseFloat((d + STEP).toFixed(1)), 5);
-            document.getElementById('slider-m' + lantai).value = newM;
-            setSliderLabel(lantai, 'm', newM);
+            document.getElementById("slider-m" + lantai).value = newM;
+            setSliderLabel(lantai, "m", newM);
           }
           // Danger mendorong Warning ke bawah
           if (d <= w) {
             const newW = Math.max(parseFloat((d - STEP).toFixed(1)), 0);
-            document.getElementById('slider-w' + lantai).value = newW;
-            setSliderLabel(lantai, 'w', newW);
+            document.getElementById("slider-w" + lantai).value = newW;
+            setSliderLabel(lantai, "w", newW);
           }
-          setSliderLabel(lantai, 'd', d);
+          setSliderLabel(lantai, "d", d);
         } else {
           // Max mendorong Danger ke bawah
           if (m <= d) {
             const newD = Math.max(parseFloat((m - STEP).toFixed(1)), 0);
-            document.getElementById('slider-d' + lantai).value = newD;
-            setSliderLabel(lantai, 'd', newD);
+            document.getElementById("slider-d" + lantai).value = newD;
+            setSliderLabel(lantai, "d", newD);
             // Danger mendorong Warning ke bawah
             if (newD <= w) {
               const newW = Math.max(parseFloat((newD - STEP).toFixed(1)), 0);
-              document.getElementById('slider-w' + lantai).value = newW;
-              setSliderLabel(lantai, 'w', newW);
+              document.getElementById("slider-w" + lantai).value = newW;
+              setSliderLabel(lantai, "w", newW);
             }
           }
-          setSliderLabel(lantai, 'm', m);
+          setSliderLabel(lantai, "m", m);
         }
       }
 
       function isiFormConfig(idRak, cfg) {
-        document.getElementById('cal-' + idRak).value = cfg.cal_factor;
-        document.getElementById('slider-w' + idRak).value = cfg.warning_kg;
-        document.getElementById('slider-d' + idRak).value = cfg.danger_kg;
-        document.getElementById('slider-m' + idRak).value = cfg.max_kg;
-        setSliderLabel(idRak, 'w', cfg.warning_kg);
-        setSliderLabel(idRak, 'd', cfg.danger_kg);
-        setSliderLabel(idRak, 'm', cfg.max_kg);
+        document.getElementById("cal-" + idRak).value = cfg.cal_factor;
+        document.getElementById("slider-w" + idRak).value = cfg.warning_kg;
+        document.getElementById("slider-d" + idRak).value = cfg.danger_kg;
+        document.getElementById("slider-m" + idRak).value = cfg.max_kg;
+        setSliderLabel(idRak, "w", cfg.warning_kg);
+        setSliderLabel(idRak, "d", cfg.danger_kg);
+        setSliderLabel(idRak, "m", cfg.max_kg);
         calAwal[idRak] = cfg.cal_factor;
+
+        // Sinkronkan kapasitas gauge & label dari DB
+        if (cfg.max_kg) {
+          KAPASITAS[idRak] = cfg.max_kg;
+          const lbl = document.getElementById("kapasitas-label-" + idRak);
+          if (lbl) lbl.textContent = "Kapasitas: " + cfg.max_kg.toFixed(1) + " kg";
+        }
       }
 
       async function fetchConfig() {
         try {
-          const res = await fetch('/api/config');
+          const res = await fetch("/api/config");
           const json = await res.json();
           if (!json.success) return;
-          Object.entries(json.data).forEach(([idRak, cfg]) => isiFormConfig(Number(idRak), cfg));
+          Object.entries(json.data).forEach(([idRak, cfg]) =>
+            isiFormConfig(Number(idRak), cfg),
+          );
         } catch (e) {
-          console.warn('[config] Gagal fetch:', e.message);
+          console.warn("[config] Gagal fetch:", e.message);
         }
       }
 
       fetchConfig();
 
       async function kirimConfig(idRak) {
-        const cal_factor  = parseFloat(document.getElementById('cal-' + idRak).value);
-        const warning_kg  = parseFloat(document.getElementById('slider-w' + idRak).value);
-        const danger_kg   = parseFloat(document.getElementById('slider-d' + idRak).value);
-        const max_kg      = parseFloat(document.getElementById('slider-m' + idRak).value);
+        const cal_factor = parseFloat(
+          document.getElementById("cal-" + idRak).value,
+        );
+        const warning_kg = parseFloat(
+          document.getElementById("slider-w" + idRak).value,
+        );
+        const danger_kg = parseFloat(
+          document.getElementById("slider-d" + idRak).value,
+        );
+        const max_kg = parseFloat(
+          document.getElementById("slider-m" + idRak).value,
+        );
 
-        const msgEl = document.getElementById('cfg-msg-' + idRak);
-        msgEl.classList.remove('hidden');
+        const msgEl = document.getElementById("cfg-msg-" + idRak);
+        msgEl.classList.remove("hidden");
 
         // Cek login dulu
         if (!currentUser) {
-          msgEl.textContent = 'Harus login dulu untuk menyimpan konfigurasi.';
-          msgEl.className = 'mt-3 text-sm font-semibold text-yellow-600';
+          msgEl.textContent = "Harus login dulu untuk menyimpan konfigurasi.";
+          msgEl.className = "mt-3 text-sm font-semibold text-yellow-600";
           tampilkanLogin(() => simpanConfig(idRak));
           return;
         }
 
         try {
-          const res = await fetch('/api/config/' + idRak, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cal_factor, warning_kg, danger_kg, max_kg })
+          const res = await fetch("/api/config/" + idRak, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cal_factor, warning_kg, danger_kg, max_kg }),
           });
           const json = await res.json();
           if (res.status === 401) {
             // Sesi expired
             setAuthState(null);
-            msgEl.textContent = 'Sesi habis, silakan login ulang.';
-            msgEl.className = 'mt-3 text-sm font-semibold text-yellow-600';
+            msgEl.textContent = "Sesi habis, silakan login ulang.";
+            msgEl.className = "mt-3 text-sm font-semibold text-yellow-600";
             tampilkanLogin(() => simpanConfig(idRak));
             return;
           }
           if (!res.ok) throw new Error(json.message);
           calAwal[idRak] = cal_factor;
-          msgEl.textContent = 'Konfigurasi berhasil disimpan';
-          msgEl.className = 'mt-3 text-sm font-semibold text-green-600';
+          msgEl.textContent = "Konfigurasi berhasil disimpan";
+          msgEl.className = "mt-3 text-sm font-semibold text-green-600";
         } catch (e) {
-          msgEl.textContent = 'Gagal: ' + e.message;
-          msgEl.className = 'mt-3 text-sm font-semibold text-red-600';
+          msgEl.textContent = "Gagal: " + e.message;
+          msgEl.className = "mt-3 text-sm font-semibold text-red-600";
         }
       }
 
       function simpanConfig(idRak) {
-        const calBaru = parseFloat(document.getElementById('cal-' + idRak).value);
+        const calBaru = parseFloat(
+          document.getElementById("cal-" + idRak).value,
+        );
         if (calBaru !== calAwal[idRak]) {
           // Cal factor berubah — minta konfirmasi
-          document.getElementById('cal-dialog-desc').textContent =
+          document.getElementById("cal-dialog-desc").textContent =
             `Anda akan mengubah Cal Factor Lantai ${idRak} dari ${calAwal[idRak]} → ${calBaru}.\nIni akan mempengaruhi akurasi pembacaan berat. Ketik nilai baru (${calBaru}) untuk konfirmasi.`;
-          document.getElementById('cal-dialog-input').value = '';
-          document.getElementById('cal-dialog-error').classList.add('hidden');
-          document.getElementById('cal-dialog').classList.remove('hidden');
+          document.getElementById("cal-dialog-input").value = "";
+          document.getElementById("cal-dialog-error").classList.add("hidden");
+          document.getElementById("cal-dialog").classList.remove("hidden");
           calPendingCallback = () => kirimConfig(idRak);
         } else {
           kirimConfig(idRak);
@@ -918,28 +1357,149 @@
       }
 
       function tutupCalDialog() {
-        document.getElementById('cal-dialog').classList.add('hidden');
+        document.getElementById("cal-dialog").classList.add("hidden");
         calPendingCallback = null;
       }
 
       function konfirmasiCal() {
         // Cari lantai yang sedang dikonfirmasi dari callback
-        const allCals = [1, 2].map(i => parseFloat(document.getElementById('cal-' + i).value));
-        const inputVal = parseFloat(document.getElementById('cal-dialog-input').value);
+        const allCals = [1, 2].map((i) =>
+          parseFloat(document.getElementById("cal-" + i).value),
+        );
+        const inputVal = parseFloat(
+          document.getElementById("cal-dialog-input").value,
+        );
         // Cocokkan dengan salah satu yang berubah
-        const cocok = allCals.some(v => Math.abs(v - inputVal) < 0.001);
+        const cocok = allCals.some((v) => Math.abs(v - inputVal) < 0.001);
         if (!cocok) {
-          document.getElementById('cal-dialog-error').classList.remove('hidden');
+          document
+            .getElementById("cal-dialog-error")
+            .classList.remove("hidden");
           return;
         }
-        document.getElementById('cal-dialog').classList.add('hidden');
-        if (calPendingCallback) { calPendingCallback(); calPendingCallback = null; }
+        document.getElementById("cal-dialog").classList.add("hidden");
+        if (calPendingCallback) {
+          calPendingCallback();
+          calPendingCallback = null;
+        }
       }
 
-      socket.on('config-update', (data) => {
+      socket.on("config-update", (data) => {
         isiFormConfig(data.id_rak, data);
       });
 
+      // ==================== KALIBRASI ====================
+
+      let calibratePendingLantai = null;
+
+      function bukaCalibrateDialog(idRak) {
+        calibratePendingLantai = idRak;
+        document.getElementById("calibrate-dialog-desc").textContent =
+          `Kalibrasi sensor Lantai ${idRak} menggunakan beban referensi 200 gram.`;
+        const statusEl = document.getElementById("calibrate-dialog-status");
+        statusEl.classList.add("hidden");
+        statusEl.textContent = "";
+        const confirmBtn = document.getElementById("calibrate-dialog-confirm");
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        document.getElementById("calibrate-dialog").classList.remove("hidden");
+      }
+
+      function tutupCalibrateDialog() {
+        document.getElementById("calibrate-dialog").classList.add("hidden");
+        calibratePendingLantai = null;
+      }
+
+      async function konfirmasiKalibrasi() {
+        if (!calibratePendingLantai) return;
+
+        // Cek login
+        if (!currentUser) {
+          tutupCalibrateDialog();
+          tampilkanLogin(() => bukaCalibrateDialog(calibratePendingLantai));
+          return;
+        }
+
+        const idRak = calibratePendingLantai;
+        const confirmBtn = document.getElementById("calibrate-dialog-confirm");
+        const statusEl = document.getElementById("calibrate-dialog-status");
+
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add("opacity-50", "cursor-not-allowed");
+        statusEl.textContent = "Mengirim perintah kalibrasi ke ESP32...";
+        statusEl.className = "text-sm font-semibold text-blue-600 mb-3";
+        statusEl.classList.remove("hidden");
+
+        try {
+          const res = await fetch("/api/calibrate/" + idRak, {
+            method: "POST",
+          });
+          const json = await res.json();
+          if (res.status === 401) {
+            setAuthState(null);
+            tutupCalibrateDialog();
+            tampilkanLogin(() => bukaCalibrateDialog(idRak));
+            return;
+          }
+          if (!res.ok) throw new Error(json.message);
+
+          statusEl.textContent =
+            "Perintah kalibrasi berhasil dikirim. Menunggu ESP32...";
+          statusEl.className = "text-sm font-semibold text-green-600 mb-3";
+        } catch (e) {
+          statusEl.textContent = "Gagal: " + e.message;
+          statusEl.className = "text-sm font-semibold text-red-600 mb-3";
+          confirmBtn.disabled = false;
+          confirmBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        }
+      }
+
+      socket.on("calibrate-result", (data) => {
+        const statusEl = document.getElementById("calibrate-dialog-status");
+        const idRak = data.id_rak;
+
+        if (data.success) {
+          // Update input cal factor di form
+          const calInput = document.getElementById("cal-" + idRak);
+          if (calInput && data.cal_factor) {
+            calInput.value = data.cal_factor;
+            calAwal[idRak] = data.cal_factor;
+          }
+          if (
+            statusEl &&
+            !document
+              .getElementById("calibrate-dialog")
+              .classList.contains("hidden")
+          ) {
+            statusEl.textContent = `Kalibrasi Lantai ${idRak} berhasil! Cal Factor baru: ${data.cal_factor}`;
+            statusEl.className = "text-sm font-semibold text-green-600 mb-3";
+            statusEl.classList.remove("hidden");
+          }
+          // Update pesan di cfg-msg
+          const msgEl = document.getElementById("cfg-msg-" + idRak);
+          if (msgEl) {
+            msgEl.textContent = `Kalibrasi berhasil. Cal Factor diperbarui ke ${data.cal_factor}`;
+            msgEl.className = "mt-3 text-sm font-semibold text-green-600";
+            msgEl.classList.remove("hidden");
+          }
+        } else {
+          if (
+            statusEl &&
+            !document
+              .getElementById("calibrate-dialog")
+              .classList.contains("hidden")
+          ) {
+            statusEl.textContent = `Kalibrasi Lantai ${idRak} gagal: ${data.message}`;
+            statusEl.className = "text-sm font-semibold text-red-600 mb-3";
+            statusEl.classList.remove("hidden");
+            const confirmBtn = document.getElementById(
+              "calibrate-dialog-confirm",
+            );
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove("opacity-50", "cursor-not-allowed");
+          }
+        }
+      });
     </script>
   </body>
 </html>

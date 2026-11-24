@@ -1,3 +1,4 @@
 node_modules/
 .env
 *.md
+smart_load_safety.ino
